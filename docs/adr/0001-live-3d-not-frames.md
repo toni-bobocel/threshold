@@ -1,5 +1,7 @@
 # Live 3D, not a frame sequence
 
+Superseded by [ADR 4](0004-frames-from-blender-after-all.md). Kept because the reasoning was sound for the constraints I had at the time.
+
 The site I took the idea from plays a pre-rendered film, frame by frame, as you scroll. That is the usual way to do it and it looks wonderful. I chose to render the suites live in three.js instead.
 
 ## Why
