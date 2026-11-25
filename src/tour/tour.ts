@@ -33,6 +33,7 @@ export function mountTour(suites: Record<string, Suite>) {
   const ctx = canvas.getContext('2d', { alpha: false })!
   const flash = $<HTMLElement>('.stage__flash', stage)
   const small = matchMedia('(max-width: 900px)').matches
+  const fallback = $<HTMLElement>('.stage__fallback', stage)
 
   const ui = {
     place: $('.arrival__place', stage),
@@ -194,9 +195,21 @@ export function mountTour(suites: Record<string, Suite>) {
   async function load(id: string) {
     const ticket = ++loading
     const base = `${import.meta.env.BASE_URL}frames/${id}/`
-    const m: Meta = await fetch(`${base}meta.json`).then(r => r.json())
+    const res = await fetch(`${base}meta.json`)
     // a second click while the first suite was still loading wins
     if (ticket !== loading) return
+    // the dev server answers a missing file with index.html, so check what came back
+    const missing = !res.ok || !res.headers.get('content-type')?.includes('json')
+    fallback.hidden = !missing
+    if (missing) {
+      meta = undefined
+      frames?.dispose()
+      frames = undefined
+      ctx.fillStyle = '#efebe5'
+      ctx.fillRect(0, 0, canvas.width, canvas.height)
+      return
+    }
+    const m: Meta = await res.json()
     suite = suites[id]!
     meta = m
     frames?.dispose()
@@ -280,6 +293,8 @@ export function mountTour(suites: Record<string, Suite>) {
     canvas.width = Math.round(stage.clientWidth * dpr)
     canvas.height = Math.round(stage.clientHeight * dpr)
     ctx.imageSmoothingQuality = 'high'
+    ctx.fillStyle = '#efebe5'
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
     dirty = true
   }
   new ResizeObserver(resize).observe(stage)

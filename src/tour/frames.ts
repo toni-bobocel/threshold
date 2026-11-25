@@ -42,7 +42,8 @@ export class Frames {
     this.inflight.add(got)
     this.fetching++
     fetch(this.url(key))
-      .then(r => (r.ok ? r.blob() : null))
+      // a frame not rendered yet comes back as the dev server's index.html
+      .then(r => (r.ok && r.headers.get('content-type')?.startsWith('image/') ? r.blob() : null))
       .then(blob => {
         if (blob) this.blobs.set(got, blob)
       })
@@ -71,12 +72,18 @@ export class Frames {
           continue
         }
         this.decoding.add(key)
-        createImageBitmap(blob).then(bmp => {
-          this.decoding.delete(key)
-          if (this.gone) return bmp.close()
-          this.bitmaps.set(key, bmp)
-          this.onReady()
-        })
+        createImageBitmap(blob).then(
+          bmp => {
+            this.decoding.delete(key)
+            if (this.gone) return bmp.close()
+            this.bitmaps.set(key, bmp)
+            this.onReady()
+          },
+          () => {
+            this.decoding.delete(key)
+            this.blobs.delete(key)
+          },
+        )
       }
     }
     for (const [key, bmp] of this.bitmaps) {
