@@ -3,3 +3,4 @@ dist
 coverage
 .env
 blender/out
+__pycache__
