@@ -7,7 +7,7 @@ film()
 drawer()
 rail()
 
-// three.js is most of the weight of the site: only fetch it when the walk-through is close.
+// the walk-through starts streaming frames as soon as it mounts: wait until it is close.
 const tour = document.querySelector('.tour')!
 const near = new IntersectionObserver(async ([entry]) => {
   if (!entry?.isIntersecting) return

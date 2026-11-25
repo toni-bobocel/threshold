@@ -35,6 +35,16 @@
   top: calc(56px + 9vh);
   width: min(560px, 44vw);
   text-shadow: 0 1px 24px rgb(40 30 40 / 0.25);
+  isolation: isolate;
+}
+/* the Tokyo sky is nearly white at dusk: without this the title disappears into it */
+.arrival::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: calc(-56px - 9vh) -12vw -60vh calc(-1 * var(--gutter));
+  background: linear-gradient(90deg, rgb(38 32 38 / 0.4), rgb(38 32 38 / 0.22) 55%, transparent);
+  pointer-events: none;
 }
 .arrival .eyebrow { margin-bottom: 22px; }
 .arrival__title { font: 300 clamp(40px, 5.4vw, 84px)/1.02 var(--serif); letter-spacing: 0.2px; margin-bottom: 26px; }

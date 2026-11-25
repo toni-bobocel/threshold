@@ -32,7 +32,7 @@ In the browser, a GSAP timeline driven by ScrollTrigger turns scroll into a fram
 
 ```sh
 pnpm install
-pnpm dev        # http://localhost:5173
+pnpm dev        # http://localhost:5178
 pnpm test
 pnpm lint
 pnpm build      # typecheck, then build to dist/
