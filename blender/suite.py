@@ -47,7 +47,7 @@ def palette(suite):
             'mullion': lambda: M.plain('mullion', '#2c2722', rough=0.4, metal=0.8),
             'mirror': lambda: M.plain('mirror', '#dfe3e3', rough=0.02, metal=1.0),
             'glow': lambda: M.glow('glow', '#ffe8cc', 7.0),
-            'shade': lambda: M.shade_paper('shade', '#f3e9d8'),
+            'shade': lambda: M.shade_paper('shade', '#e2d3bb'),
             'border': lambda: M.fabric('border', '#161616', sheen=0.3),
             'lacquer': lambda: M.plain('lacquer', '#121111', rough=0.12, coat=1.0),
             'sweets': lambda: M.plain('sweets', '#9b1f1c', rough=0.5),

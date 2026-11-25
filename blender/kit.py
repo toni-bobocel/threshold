@@ -136,7 +136,8 @@ def lamp(sc, g, at, lit=False, legs=0.32):
             box(sc, (0.012, 0.012, legs), (x + dx, y + dy, z + legs / 2), 'dark', bevel=0.002, parent=g)
     box(sc, (0.14, 0.14, 0.012), (x, y, z + legs), 'dark', bevel=0.002, parent=g)
     box(sc, (0.38, 0.26, 0.24), (x, y, z + legs + 0.13), 'shade', bevel=0.004, parent=g)
-    point(sc, (x, y, z + legs + 0.12), energy=30 if lit else 16, radius=0.1, parent=g)
+    # any brighter and the linen clips to white when the camera passes close
+    point(sc, (x, y, z + legs + 0.12), energy=7 if lit else 4, radius=0.1, parent=g)
 
 
 def door(sc, p, g):
@@ -264,7 +265,9 @@ def headboard(sc, p, g):
     for s in (-1, 1):
         x = s * (w / 2 - 0.3)
         box(sc, (0.5, 0.3, 0.03), (x, -0.36, 0.58), 'oak', bevel=0.004, parent=g)
-        lamp(sc, g, (x, 0.02, 1.01), lit=p.get('light') and s > 0, legs=0.28)
+        # on the bedside shelves, below eye level: on top of the headboard they
+        # stood in the way of the walk round its end
+        lamp(sc, g, (x, -0.36, 0.595), lit=p.get('light') and s > 0, legs=0.2)
     box(sc, (0.22, 0.02, 0.1), (-w / 2 + 0.3, -0.225, 0.85), 'panel', bevel=0.003, parent=g)
 
 
