@@ -298,9 +298,13 @@ const make: Record<string, Make> = {
     const s = p.w ?? 1.5
     const r = new THREE.Mesh(new THREE.DodecahedronGeometry(s, 1), m('sandstone'))
     const pos = r.geometry.attributes.position!
+    // displace by position, not by index: faces share corners only by position
     for (let i = 0; i < pos.count; i++) {
-      const k = 1 + Math.sin(i * 12.9898) * 0.12
-      pos.setXYZ(i, pos.getX(i) * k, Math.max(pos.getY(i) * 0.7 * k, -0.2), pos.getZ(i) * k * 0.85)
+      const x = pos.getX(i)
+      const y = pos.getY(i)
+      const z = pos.getZ(i)
+      const k = 1 + Math.sin(x * 5.1 + y * 3.7 + z * 2.3) * 0.12
+      pos.setXYZ(i, x * k, Math.max(y * 0.7 * k, -0.2), z * k * 0.85)
     }
     r.geometry.computeVertexNormals()
     r.position.y = s * 0.35
@@ -334,6 +338,12 @@ const make: Record<string, Make> = {
       frond.rotation.x = 0.35 + (i % 3) * 0.2
       g.add(frond)
     }
+  },
+
+  post(p, m, g) {
+    const h = p.h ?? 2.9
+    block(g, m('wood'), 0.2, h, 0.2, 0, h / 2, 0, 0.02)
+    block(g, m('stone'), 0.34, 0.12, 0.34, 0, 0.06, 0, 0.01)
   },
 
   door(p, m, g) {

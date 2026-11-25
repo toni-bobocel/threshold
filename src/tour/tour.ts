@@ -352,7 +352,8 @@ export function mountTour(suites: Record<string, Suite>) {
     ui.gauge.style.opacity = String(g)
     ui.gauge.style.visibility = g > 0.01 ? 'visible' : 'hidden'
     const value = Math.round(suite.gauge.from + (suite.gauge.to - suite.gauge.from) * Math.min(1, s.fly * 1.15) ** 1.6)
-    ui.gaugeValue.textContent = String(value).padStart(2, '0')
+    // a floor reads as "07"; a height in metres does not
+    ui.gaugeValue.textContent = suite.gauge.unit ? String(value) : String(value).padStart(2, '0')
     ui.plate.style.opacity = String(s.plate)
     flash.style.opacity = String(s.flash)
 

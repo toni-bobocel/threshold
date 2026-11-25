@@ -253,7 +253,8 @@ function desert(suite: Suite): Outside {
     return step + n(x / 120, z / 120, 3) * 14
   }
   const height = (x: number, z: number) => {
-    const clear = Math.min(1, Math.hypot(x, z) / 260)
+    // a flat basin around the resort, so the last part of the descent has room
+    const clear = THREE.MathUtils.smoothstep(Math.hypot(x, z), 150, 650)
     return mesa(x, z) * clear
   }
   const sand = new THREE.Color('#c99572')
@@ -297,7 +298,7 @@ function desert(suite: Suite): Outside {
   return {
     scene,
     path: {
-      pos: [[out.x * 1300, 420, out.y * 1300], [out.x * 600, 190, out.y * 600], [out.x * 190, 40, out.y * 190], [out.x * 86, 4, out.y * 86]],
+      pos: [[out.x * 1300, 420, out.y * 1300], [out.x * 640, 320, out.y * 640], [out.x * 220, 70, out.y * 220], [out.x * 86, 4, out.y * 86]],
       look: [[0, 60, 0], [0, 20, 0], [0, 4, 0], [out.x * 70, 2.4, out.y * 70]],
     },
     tick() {},
