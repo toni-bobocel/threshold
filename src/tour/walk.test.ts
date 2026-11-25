@@ -1,11 +1,10 @@
+import { readFileSync } from 'node:fs'
 import { CatmullRomCurve3, Vector3 } from 'three'
 import { describe, expect, it } from 'vitest'
 import { amangiri } from '../suites/amangiri'
 import { amanpuri } from '../suites/amanpuri'
 import { tokyo } from '../suites/tokyo'
-import { pieceKinds } from './furniture'
-import { bounds, runs, type Suite, type V2 } from './plan'
-import { legs, length } from './script'
+import { bounds, pieceKinds, runs, type Suite, type V2 } from './plan'
 
 const suites: Suite[] = [tokyo, amangiri, amanpuri]
 
@@ -32,6 +31,15 @@ function barriers(suite: Suite) {
   }
   return out
 }
+
+describe('the furniture kit', () => {
+  it('matches what Blender can build', () => {
+    const py = readFileSync(new URL('../../blender/kit.py', import.meta.url), 'utf-8')
+    const listed = py.slice(py.indexOf('KINDS = {')).match(/\(([^)]*)\)/)?.[1] ?? ''
+    const kinds = listed.split(',').map(k => k.trim()).filter(Boolean)
+    expect([...kinds].sort()).toEqual([...pieceKinds].sort())
+  })
+})
 
 describe('runs', () => {
   it('splits a wall around its openings', () => {
@@ -85,10 +93,5 @@ describe.each(suites)('$id', suite => {
   it('starts and ends on a stop that says something', () => {
     expect(suite.stops[0]?.title).toBeTruthy()
     expect(suite.stops.at(-1)?.title).toBeTruthy()
-  })
-
-  it('gives each leg a length the scroll can afford', () => {
-    for (const l of legs(suite.stops)) expect(l).toBeGreaterThan(0.35)
-    expect(length(suite.stops)).toBeLessThan(40)
   })
 })

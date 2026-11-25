@@ -90,6 +90,13 @@ export type Suite = {
   outro: { title: string; body: string; facts: [string, string][] }
 }
 
+// What blender/kit.py knows how to build; the test keeps the plans honest about it.
+export const pieceKinds = [
+  'sofa', 'armchair', 'lowTable', 'sideTable', 'dining', 'bed', 'desk', 'tub', 'vanity', 'plant', 'ikebana',
+  'art', 'rug', 'wardrobe', 'bench', 'pendant', 'daybed', 'lounger', 'firepit', 'pool', 'rock', 'palm', 'bowl',
+  'shelf', 'door', 'post',
+]
+
 export function bounds(rooms: Room[]) {
   let x0 = Infinity
   let z0 = Infinity
