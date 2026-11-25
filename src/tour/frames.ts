@@ -65,6 +65,8 @@ export class Frames {
     for (let d = 0; d <= WINDOW; d++) {
       for (const i of d ? [centre + d, centre - d] : [centre]) {
         if (i < 0 || i >= this.count) continue
+        // the maquette was only rendered over the model orbit
+        if (kind === 'k' && (i < this.clay[0] || i >= this.clay[0] + this.clay[1])) continue
         const key = `${kind}${i}`
         if (this.bitmaps.has(key) || this.decoding.has(key)) continue
         const blob = this.blobs.get(key)
