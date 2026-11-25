@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- An unofficial study. It should never compete with the real site in search results. -->
+  <meta name="robots" content="noindex, nofollow">
+  <title>Aman, stepped inside: a concept study</title>
+  <meta name="description" content="A concept study rebuilding the aman.com home page with a scroll-driven walk through three Aman suites, rendered live in WebGL.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f3eee7'/%3E%3Cpath d='M9 26 16 7l7 19' fill='none' stroke='%23313131' stroke-width='1.4'/%3E%3Cpath d='M13 4h6' stroke='%23313131' stroke-width='1.4'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://www.aman.com">
+  <script type="module" src="/src/main.ts"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to main content</a>
+
+  <header class="masthead">
+    <div class="masthead__left">
+      <button class="burger" type="button" aria-expanded="false" aria-controls="drawer">
+        <span class="burger__lines" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span>Menu</span>
+      </button>
+      <button class="search" type="button" aria-label="Search">
+        <svg viewBox="0 0 20 20" width="19" height="19" aria-hidden="true"><circle cx="8.5" cy="8.5" r="6.5" fill="none" stroke="currentColor" stroke-width="1.1"/><path d="m13.4 13.4 5 5" stroke="currentColor" stroke-width="1.1"/></svg>
+      </button>
+    </div>
+    <a class="logo" href="./" aria-label="Aman resorts, home">
+      <img src="https://www.aman.com/themes/custom/aman/logo.svg" alt="Aman resorts" width="150" height="40">
+    </a>
+    <a class="reserve" href="#tour">Reserve</a>
+  </header>
+
+  <nav class="drawer" id="drawer" aria-label="Global" hidden>
+    <div class="drawer__panel">
+      <button class="drawer__close" type="button" aria-label="Close menu">
+        <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="m3 3 14 14M17 3 3 17" stroke="currentColor" stroke-width="1.1"/></svg>
+      </button>
+      <ul class="drawer__nav">
+        <li><a href="#tour">Destinations</a></li>
+        <li><a href="#seasonal">Experiences</a></li>
+        <li><a href="#world">Festive</a></li>
+        <li><a href="#seasonal">Exclusive Offers</a></li>
+        <li><a href="#residences">Residences</a></li>
+        <li><a href="#footer">Contact us</a></li>
+        <li><a href="#world">Aman at Sea</a></li>
+        <li><a href="#world">Aman Shop</a></li>
+        <li><a href="#footer">Aman Interiors</a></li>
+        <li><a href="#footer">Janu</a></li>
+        <li><a href="#footer">ATMA</a></li>
+      </ul>
+      <p class="drawer__more">Discover Aman in...</p>
+      <ul class="drawer__regions">
+        <li>USA &amp; the Caribbean</li>
+        <li>Europe, Middle East &amp; North Africa</li>
+        <li>Asia</li>
+      </ul>
+    </div>
+    <aside class="drawer__featured">
+      <h4 class="eyebrow">New &amp; Noteworthy</h4>
+      <img src="https://www.aman.com/sites/default/files/styles/carousel_cards_slim_plus/public/2026-08/Amanvari--Mexico---Casa-Grande--1-.jpg?itok=Nd0lflWB" alt="Casa Grande at Amanvari, a terracotta-coloured villa" loading="lazy">
+      <h3>Amanvari, Mexico</h3>
+      <p>Set amid wild nature, Amanvari emerges where the distinct desert, mountain and ocean landscapes of Baja's East Cape converge.</p>
+      <p>Now open.</p>
+      <a class="cta" href="#world">Discover more</a>
+    </aside>
+    <div class="drawer__veil" data-close></div>
+  </nav>
+
+  <main id="main">
+    <section class="intro gutter">
+      <div class="intro__film">
+        <!-- The real hero is a Vimeo film locked to aman.com, so a still from the same resort holds its place. -->
+        <img src="https://www.aman.com/sites/default/files/styles/carousel_cards_extra_large_2x/public/2022-06/Amanemu%2C%20Japan%20-%20Resort%2C%20drone%20shot%205.webp?itok=l3g1DyaJ" alt="Amanemu seen from above, pavilions among the trees of Ise-Shima" fetchpriority="high">
+      </div>
+      <header class="hgroup">
+        <p class="eyebrow">amanemu, japan</p>
+        <h2>Finding Balance in Ise-Shima</h2>
+        <a class="cta" href="#tour">Discover more</a>
+      </header>
+    </section>
+
+    <section class="pair gutter">
+      <article class="card card--wide">
+        <img src="https://www.aman.com/sites/default/files/styles/carousel_cards_extra_large/public/2023-03/Amanbagh%2C%20India%20-%20Main%20Building%20Exterior%20Restaurant.webp?itok=m67t3oqr" alt="Amanbagh, India, main building exterior" loading="lazy">
+        <p class="eyebrow">Hotels &amp; Resorts</p>
+        <h3>Explore the World of Aman</h3>
+        <p>Uncover new horizons with Aman – from soul-soothing escapes by the coast to transformational journeys that awaken the spirit – across 36 hotels and resorts in 21 countries.</p>
+        <a class="cta" href="#tour">Discover more</a>
+      </article>
+      <article class="card card--tall">
+        <img src="https://www.aman.com/sites/default/files/styles/listing_teaser_slim_extra_large/public/2026-09/Aman-Rosa-Alpina--Italy---Spa---Wellness--Outdoor-Pool_3.webp?itok=uUDmwkms" alt="Aman Rosa Alpina's outdoor pool with Alpine views" loading="lazy">
+        <p class="eyebrow">featured destination</p>
+        <h3>Aman Rosa Alpina, Italy</h3>
+        <p>Tucked into Italy’s spectacular UNESCO-protected mountains, the Dolomites resort offers access to world-class ski adventures.</p>
+        <a class="cta" href="#tour">Discover more</a>
+      </article>
+    </section>
+
+    <section class="tour" id="tour" aria-label="Step inside an Aman suite">
+      <header class="tour__intro gutter">
+        <p class="eyebrow">A room of one's own</p>
+        <h2>Step Inside</h2>
+        <p>Before you arrive, walk through the rooms themselves. Choose a destination, then keep scrolling: from the skyline or the desert floor, down to the suite, and through it, one room at a time.</p>
+        <div class="tour__picker" role="tablist">
+          <button type="button" role="tab" data-hotel="tokyo" aria-selected="true">Aman Tokyo</button>
+          <button type="button" role="tab" data-hotel="amangiri" aria-selected="false">Amangiri</button>
+          <button type="button" role="tab" data-hotel="amanpuri" aria-selected="false">Amanpuri</button>
+        </div>
+      </header>
+
+      <div class="tour__track">
+        <div class="stage">
+          <canvas class="stage__gl" aria-hidden="true"></canvas>
+          <div class="stage__flash" aria-hidden="true"></div>
+
+          <div class="arrival">
+            <p class="eyebrow arrival__place"></p>
+            <h2 class="arrival__title">Aman Tokyo</h2>
+            <p class="arrival__lede"></p>
+            <p class="arrival__hint">Scroll to step inside</p>
+          </div>
+
+          <aside class="gauge glass">
+            <p class="gauge__label"></p>
+            <p class="gauge__value"><span></span><small></small></p>
+            <p class="gauge__name"></p>
+            <p class="gauge__note"></p>
+            <dl class="gauge__facts"></dl>
+          </aside>
+
+          <ul class="figures" aria-label="At a glance"></ul>
+
+          <p class="plate"></p>
+
+          <div class="note glass" aria-live="polite">
+            <p class="eyebrow note__room"></p>
+            <h3 class="note__title">Arrival</h3>
+            <p class="note__body"></p>
+            <dl class="note__facts"></dl>
+            <a class="note__reserve" href="#footer" hidden>Reserve this suite</a>
+          </div>
+
+          <ol class="steps" aria-hidden="true"></ol>
+
+          <figure class="plan glass" aria-hidden="true">
+            <svg class="plan__svg"><title>Where you are in the suite</title></svg>
+            <figcaption class="plan__caption"></figcaption>
+          </figure>
+
+          <p class="stage__fallback" hidden>This walk-through needs WebGL, which this browser has turned off.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="seasonal" id="seasonal">
+      <div class="seasonal__head gutter">
+        <h2>Seasonal Experiences</h2>
+        <p>Across the Aman world, discover new and noteworthy experiences that provide an authentic connection to the soul of a place.</p>
+      </div>
+      <div class="rail">
+        <div class="rail__track">
+          <article class="card">
+            <img src="https://www.aman.com/sites/default/files/styles/listing_teaser_large/public/2026-09/Aman-New-York--USA---Accommodation--Premier-Suite--2-.webp?itok=UGdRp7a3" alt="Premier Suite sitting area at Aman New York" loading="lazy" draggable="false">
+            <p class="eyebrow">Aman New York, United States</p>
+            <h3>Peace in the City</h3>
+            <p>Retreat to an urban sanctuary for two nights or more. Stay in Aman New York’s Premier Suite on 56th or 57th Street, and enjoy daily breakfast, airport transfers and hotel credit.</p>
+            <a class="cta" href="#tour">Discover more</a>
+          </article>
+          <article class="card">
+            <img src="https://www.aman.com/sites/default/files/styles/listing_teaser_large/public/2026-11/Campaign_-Summer-2026--Portals-1--Indonesia--27-.webp?itok=cmkYwDqe" alt="Amandari guest swimming in the river pool" loading="lazy" draggable="false">
+            <p class="eyebrow">Indonesia</p>
+            <h3>Journey Across the Islands</h3>
+            <p>Travel Indonesia with Aman for six nights or more and encounter the archipelago’s wide-ranging natural and cultural attractions along the way with a host of exclusive extras.</p>
+            <a class="cta" href="#tour">Discover more</a>
+          </article>
+          <article class="card">
+            <img src="https://www.aman.com/sites/default/files/styles/listing_teaser_large/public/2026-10/Amanpuri--Thailand---Resort--Villa-7--Aerial--Drone--2-.webp?itok=mt_ifExM" alt="Aerial view of Amanpuri villa nestled among palms" loading="lazy" draggable="false">
+            <p class="eyebrow">Exclusive Hideaways</p>
+            <h3>Aman Villas and Homes</h3>
+            <p>For families and friends travelling together, Aman hospitality and a feeling of belonging present in a collection of Villas and Homes, designed for uncompromising privacy.</p>
+            <a class="cta" href="#tour">Discover more</a>
+          </article>
+          <article class="card">
+            <img src="https://www.aman.com/sites/default/files/styles/listing_teaser_large/public/2026-10/Aman-Rosa-Alpina--Italy---Experience--Ski-Touring.webp?itok=cAADXxbs" alt="Skier ascending a snowy Alpine slope" loading="lazy" draggable="false">
+            <p class="eyebrow">Aman Rosa Alpina, Italy</p>
+            <h3>Into the Mountains</h3>
+            <p>Embrace the start of the ski season from Aman Rosa Alpina with an all-encompassing winter stay inclusive of ski rental, Dolomiti Superski passes and more.</p>
+            <a class="cta" href="#tour">Discover more</a>
+          </article>
+          <article class="card">
+            <img src="https://www.aman.com/sites/default/files/styles/listing_teaser_large/public/2026-05/Brand-Ambassador_-Novak-Djokovic---Aman-New-York--United-States--1-.webp?itok=qBgWUSEC" alt="Novak Djokovic, Aman Global Ambassador" loading="lazy" draggable="false">
+            <p class="eyebrow">wellness retreats</p>
+            <h3>A Novak Djokovic Programme</h3>
+            <p>Introducing a new three-day wellness programme, underpinned by longevity and curated by Aman Global Ambassador and Wellness Advisor, Novak Djokovic.</p>
+            <a class="cta" href="#tour">Discover more</a>
+          </article>
+          <article class="card">
+            <img src="https://www.aman.com/sites/default/files/styles/listing_teaser_large/public/2024-10/aman-venice-ballroom-0449_3.webp?itok=y6Es1uHn" alt="The ballroom at Aman Venice" loading="lazy" draggable="false">
+            <p class="eyebrow">City escapes</p>
+            <h3>Urban Retreats</h3>
+            <p>From landmarked buildings in New York and Venice to vibrant cultural encounters led by locals in Bangkok and Tokyo, Aman’s urban sanctuaries offer a peaceful retreat.</p>
+            <a class="cta" href="#tour">Discover more</a>
+          </article>
+          <article class="card">
+            <img src="https://www.aman.com/sites/default/files/styles/listing_teaser_large/public/2025-10/Amanwella%2C%20Sri%20Lanka%20%E2%80%93%20Pool%20%281%29%20%281%29.webp?itok=5kW9NsGw" alt="Amanwella pool with views over the Indian Ocean" loading="lazy" draggable="false">
+            <p class="eyebrow">coastal sanctuaries</p>
+            <h3>By the Ocean</h3>
+            <p>Embracing a freer pace of living, Aman’s waterfront properties each provide a uniquely soothing balm of sun, sea and sand.</p>
+            <a class="cta" href="#tour">Discover more</a>
+          </article>
+          <article class="card">
+            <img src="https://www.aman.com/sites/default/files/styles/listing_teaser_large/public/2024-06/aman-i-khas_india_-_spa_exterior.webp?itok=holpbA7e" alt="Spa exterior at Aman-i-Khas at dusk" loading="lazy" draggable="false">
+            <p class="eyebrow">Nature</p>
+            <h3>To the Wilds</h3>
+            <p>Venture out of the ordinary with a stay immersed in Aman’s most remote camp and safari settings, where enriching adventures ignite the explorer within.</p>
+            <a class="cta" href="#tour">Discover more</a>
+          </article>
+        </div>
+        <div class="rail__bar" aria-hidden="true"><i></i></div>
+      </div>
+    </section>
+
+    <section class="residences" id="residences">
+      <div class="pair gutter">
+        <article class="card card--wide">
+          <img src="https://www.aman.com/sites/default/files/styles/carousel_cards_extra_large/public/2025-01/aman_residences_dubai_-_external_terrace.webp?itok=A1ovqzHb" alt="External terrace at Aman Dubai with plunge pool" loading="lazy">
+          <p class="eyebrow">Aman Residences</p>
+          <h3>Own a Private Piece of Aman</h3>
+          <p>Impeccable homes for a select few, Aman Residences span more than 20 destinations. Each property is shaped by Aman's hallmarks: profound privacy, intuitive service and architecture in tune with its setting.</p>
+          <a class="cta" href="#footer">Discover more</a>
+        </article>
+        <article class="card card--tall">
+          <img src="https://www.aman.com/sites/default/files/styles/listing_teaser_slim_extra_large/public/2026-11/Aman-Residences--Amantaru---Pool-Terrace_0.webp?itok=5qmE5L8w" alt="Pool terrace at Amantaru with loungers" loading="lazy" onerror="this.style.visibility='hidden'">
+          <p class="eyebrow">Featured Residence</p>
+          <h3>Unveiling Amantaru, Puerto Rico</h3>
+          <p>Designed by MASASTUDIO, Amantaru’s limited collection of three-to-eight-bedroom residences find home on a secluded hillside overlooking the Caribbean Sea.</p>
+          <a class="cta" href="#footer">Discover more</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="world gutter" id="world">
+      <h2>The World of Aman</h2>
+      <div class="trio">
+        <article class="card">
+          <img src="https://www.aman.com/sites/default/files/styles/listing_teaser_slim_extra_large/public/2026-10/Aman-Festive-Gift-Card-2026--3626x4771.webp?itok=sH58H9r_" alt="Amanvari festive gift card with terracotta fabric" loading="lazy">
+          <p class="eyebrow">grand gestures</p>
+          <h3>Aman Gift Cards</h3>
+          <p>Prompting new adventures, Aman Gift Cards can be put towards experiences and stays at 36 destinations worldwide.</p>
+          <a class="cta" href="#footer">Shop now</a>
+        </article>
+        <article class="card">
+          <img src="https://www.aman.com/sites/default/files/styles/listing_teaser_slim_extra_large/public/2026-11/Aman-Essentials-Festive---no-logo--1-.webp?itok=XQbbQzM_" alt="Festive illustration of a winter landscape" loading="lazy">
+          <p class="eyebrow">aman essentials</p>
+          <h3>2026 Advent Calendar</h3>
+          <p>A seasonal countdown inspired by Amankora, Bhutan, encapsulating a bespoke product edit.</p>
+          <a class="cta" href="#footer">Shop now</a>
+        </article>
+        <article class="card">
+          <img src="https://www.aman.com/sites/default/files/styles/listing_teaser_slim_extra_large/public/2026-02/Aman%20at%20Sea%20Hero%20Exterior-Portrait.webp?itok=8qzf41Sd" alt="Aerial view of a ship on calm water" loading="lazy">
+          <p class="eyebrow">introducing amangati</p>
+          <h3>Aman at Sea</h3>
+          <p>Extending Aman’s legacy on the water, Aman at Sea reimagines ocean travel through the brand’s hallmarks of privacy, peace and genuine hospitality. Reservations open now.</p>
+          <a class="cta" href="#footer">Discover more</a>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer gutter" id="footer">
+    <section class="signup">
+      <h2>Get inspired</h2>
+      <p>To receive updates about exclusive experiences, events, new destinations and more, please register your interest.</p>
+      <a class="signup__button" href="#footer">Sign Up</a>
+    </section>
+
+    <section class="quicklinks">
+      <nav>
+        <h2>More information</h2>
+        <ul>
+          <li>Aman Group</li><li>- Aman</li><li>- Aman Essentials</li><li>- Aman Interiors</li><li>- Aman at Sea</li><li>- Janu</li><li>- ATMA</li>
+          <li>Residences</li><li>Gift Card</li><li>Careers</li><li>Leadership</li><li>Sustainability</li><li>Privacy Notice</li><li>Cookie Policy</li><li>Legal Notice</li><li>Digital Accessibility</li><li>Cookies Settings</li>
+        </ul>
+        <a class="contact" href="#footer">Contact Us</a>
+      </nav>
+      <nav class="destinations">
+        <h2>Destinations</h2>
+        <div class="destinations__cols">
+          <div>
+            <h3>Americas &amp; Caribbean</h3>
+            <ul>
+              <li>Amanera, Dominican Republic, Reopening Soon</li><li>Amangani, United States, Reopening Soon</li><li>Amangiri, United States</li><li>Aman New York, United States</li><li>Amanyara, Turks &amp; Caicos Islands</li><li>Amanvari, Mexico</li><li>Aman Miami Beach, Opening 2028</li><li>Aman Beverly Hills, Opening 2028</li><li>Amancaya, The Bahamas, Coming Soon</li><li>Amansanu, United States, Coming Soon</li><li>Amantaru, Puerto Rico, Coming Soon</li>
+            </ul>
+            <h3>Europe, Middle East &amp; Africa</h3>
+            <ul>
+              <li>Aman Dubai, United Arab Emirates, Coming Soon</li><li>Amanjena, Morocco</li><li>Aman Le Mélézin, France</li><li>Amanruya, Turkey</li><li>Amansamar, Kingdom of Saudi Arabia, Coming Soon</li><li>Aman Sveti Stefan, Montenegro</li><li>Aman Venice, Italy</li><li>Amanzoe, Greece</li><li>Aman Rosa Alpina, Italy</li><li>Aman Spa at The Connaught, United Kingdom</li><li>Aman Karingani, Mozambique, Coming Soon</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Asia</h3>
+            <ul>
+              <li>Amanbagh, India</li><li>Amandari, Indonesia</li><li>Amandayan, China</li><li>Amandira, Indonesia</li><li>Amanfayun, China</li><li>Amankila, Indonesia</li><li>Amankora, Bhutan</li><li>Aman Kyoto, Japan</li><li>Aman-i-Khas, India</li><li>Amanjiwo, Indonesia</li><li>Amansara, Cambodia</li><li>Amanolu, Maldives, Coming Soon</li><li>Aman Villas at Nusa Dua, Indonesia</li><li>Amanwana, Indonesia</li><li>Amanyangyun, China</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Asia (continued).</h3>
+            <ul>
+              <li>Aman Singapore, Coming Soon</li><li>Amangalla, Sri Lanka</li><li>Amanemu, Japan</li><li>Aman Residences, Tokyo, Japan</li><li>Amantaka, Laos</li><li>Aman Tokyo, Japan</li><li>Amanoi, Vietnam</li><li>Amanpulo, Philippines</li><li>Amanpuri, Thailand</li><li>Amanwella, Sri Lanka</li><li>Aman Nai Lert Bangkok, Thailand</li><li>Aman Niseko, Opening 2030</li><li>Aman Seoul, South Korea, Coming Soon</li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </section>
+
+    <section class="baseline">
+      <img src="https://www.aman.com/themes/custom/aman/logo.svg" alt="Aman" width="92" height="24" loading="lazy">
+      <p>An unofficial concept by Toni Bobocel, not affiliated with Aman. The Aman name, logo and photographs belong to Aman Group S.a.r.l. and load from aman.com; the suites are drawn from imagination.</p>
+    </section>
+  </footer>
+</body>
+</html>
