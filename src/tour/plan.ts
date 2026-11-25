@@ -34,6 +34,8 @@ export type Room = {
   // false for a terrace open to the sky
   ceiling?: string | false
   gable?: boolean
+  // a lowered band round the ceiling with a light hidden in it
+  cove?: boolean
 }
 
 export type Piece = {
@@ -61,7 +63,7 @@ export type Stop = {
 export type Sky = { top: string; horizon: string; glow: string; haze: string }
 
 export type Suite = {
-  id: 'tokyo' | 'amangiri' | 'amanpuri'
+  id: string
   place: string
   title: string
   lede: string
@@ -92,9 +94,8 @@ export type Suite = {
 
 // What blender/kit.py knows how to build; the test keeps the plans honest about it.
 export const pieceKinds = [
-  'sofa', 'armchair', 'lowTable', 'sideTable', 'dining', 'bed', 'desk', 'tub', 'vanity', 'plant', 'ikebana',
-  'art', 'rug', 'wardrobe', 'bench', 'pendant', 'daybed', 'lounger', 'firepit', 'pool', 'rock', 'palm', 'bowl',
-  'shelf', 'door', 'post',
+  'door', 'wardrobe', 'windowBench', 'roundTable', 'loungeChair', 'floorLamp', 'slats', 'footTable', 'tatami',
+  'twinBeds', 'headboard', 'console', 'art', 'bonsai', 'desk', 'tub', 'vanity', 'stool',
 ]
 
 export function bounds(rooms: Room[]) {

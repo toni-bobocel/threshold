@@ -3,14 +3,14 @@
   "id": "tokyo",
   "place": "Aman Tokyo, Japan",
   "title": "Above the Otemachi Forest",
-  "lede": "The top six floors of a tower in the financial district, and none of its noise. Below, the gardens of the Imperial Palace; on a clear morning, Fuji.",
+  "lede": "The top six floors of a tower in the financial district, and none of its noise. Below, the gardens of the Imperial Palace; on a clear evening, Fuji, with the sun going down behind it.",
   "gauge": {
    "label": "Level",
    "from": 1,
    "to": 37,
    "unit": "",
-   "name": "Corner Suite",
-   "note": "Glass on two sides, facing the palace gardens and the morning.",
+   "name": "Deluxe Suite",
+   "note": "West-facing, 71 square metres, with the sunset at the foot of the bed.",
    "facts": [
     [
      "View",
@@ -18,11 +18,11 @@
     ],
     [
      "Bath",
-     "Ofuro in basalt"
+     "Furo in dark stone"
     ],
     [
      "Materials",
-     "Camphor, washi, stone"
+     "Camphor, washi, granite"
     ]
    ]
   },
@@ -33,52 +33,69 @@
    ],
    [
     "84",
-    "Rooms and suites"
+    "Suites"
    ],
    [
-    "30 m",
-    "Under the lobby’s paper roof"
+    "71 m²",
+    "In a Deluxe Suite"
    ]
   ],
-  "plate": "Level 37",
-  "height": 3,
-  "iso": 2.35,
+  "plate": "Deluxe Suite, level 37",
+  "height": 2.8,
+  "iso": -1.95,
   "sky": {
-   "top": "#8088aa",
-   "glow": "#e7b9b4",
-   "horizon": "#f6d7bd",
-   "haze": "rgba(238,210,205,0.55)"
+   "top": "#7f8bb0",
+   "glow": "#efb48f",
+   "horizon": "#f7d3b2",
+   "haze": "rgba(240,206,190,0.5)"
   },
   "sun": [
-   34,
-   9,
-   -10
+   -38,
+   3,
+   15
   ],
   "view": "city",
   "finishes": {
    "floor": {
     "paint": "planks",
-    "base": "#a78467",
-    "arg": 7,
+    "base": "#b48a5f",
+    "arg": 8,
     "tile": 1.3,
+    "rough": 0.5
+   },
+   "granite": {
+    "paint": "tiles",
+    "base": "#3c3c3b",
+    "arg": 2,
+    "tile": 1.2,
     "rough": 0.55
    },
-   "stone": {
+   "basalt": {
     "paint": "tiles",
-    "base": "#4b4946",
-    "arg": 2,
+    "base": "#3a3a39",
+    "arg": 4,
     "tile": 1.2,
     "rough": 0.6
    },
    "wall": {
     "paint": "plaster",
-    "base": "#ebe3d5",
-    "arg": 0.05,
+    "base": "#ece6da",
+    "arg": 0.04,
     "tile": 3
+   },
+   "washi": {
+    "paint": "washi",
+    "base": "#ebe4d6"
+   },
+   "oak": {
+    "paint": "grain",
+    "base": "#cfab7c",
+    "tile": 1.4,
+    "rough": 0.5
    },
    "ceiling": {
     "paint": "plaster",
-    "base": "#efe9de",
+    "base": "#f1ece3",
     "arg": 0.03,
     "tile": 3
    },
@@ -89,218 +106,196 @@
    },
    "wood": {
     "paint": "grain",
-    "base": "#9c7656",
+    "base": "#cfab7c",
     "tile": 1.4,
-    "rough": 0.6
+    "rough": 0.5
    },
    "dark": {
-    "base": "#3a302a",
-    "rough": 0.5
+    "base": "#2c2b2a",
+    "rough": 0.45
    },
    "fabric": {
     "paint": "weave",
-    "base": "#d9d0c3",
-    "tile": 0.8,
-    "rough": 1
+    "base": "#3b3b3d"
+   },
+   "throw": {
+    "paint": "weave",
+    "base": "#5d5b58"
    },
    "linen": {
     "paint": "weave",
-    "base": "#f3eee6",
-    "tile": 0.8,
-    "rough": 1
+    "base": "#f4f1ec"
    },
-   "basalt": {
-    "paint": "speckle",
-    "base": "#3e3c3a",
-    "tile": 1,
-    "rough": 0.65
-   },
-   "rug": {
+   "tatami": {
     "paint": "weave",
-    "base": "#c9bdac",
-    "tile": 1.2,
-    "rough": 1
+    "base": "#c8b48a"
    },
    "accent": {
-    "base": "#8c4b2e"
+    "base": "#1d1b1a"
    },
    "water": {
-    "base": "#6f8f8c"
+    "base": "#7d9a99"
    }
   },
   "rooms": [
    {
-    "name": "Genkan",
-    "rect": [
-     -7,
-     -5,
-     -4,
-     5
-    ],
-    "floor": "stone"
-   },
-   {
-    "name": "Dining room",
-    "rect": [
-     -4,
-     -5,
-     0,
-     0
-    ],
-    "floor": "floor"
-   },
-   {
-    "name": "Living room",
-    "rect": [
-     0,
-     -5,
-     7,
-     0
-    ],
-    "floor": "floor"
-   },
-   {
     "name": "Bathroom",
     "rect": [
-     -4,
      0,
-     1,
-     5
+     0,
+     5.2,
+     2.5
     ],
-    "floor": "stone"
+    "floor": "granite"
    },
    {
     "name": "Bedroom",
     "rect": [
-     1,
      0,
-     7,
-     5
+     2.5,
+     6.6,
+     7.1
+    ],
+    "floor": "floor",
+    "cove": true
+   },
+   {
+    "name": "Entrance",
+    "rect": [
+     5.2,
+     0,
+     10,
+     2.5
     ],
     "floor": "floor"
+   },
+   {
+    "name": "Study",
+    "rect": [
+     6.6,
+     2.5,
+     10,
+     7.1
+    ],
+    "floor": "floor",
+    "cove": true
    }
   ],
   "walls": [
    {
     "a": [
-     -7,
-     -5
+     0,
+     0
     ],
     "b": [
-     -4,
-     -5
-    ]
-   },
-   {
-    "a": [
-     -4,
-     -5
-    ],
-    "b": [
-     7,
-     -5
+     0,
+     2.5
     ],
     "kind": "glass"
    },
    {
     "a": [
-     7,
-     -5
+     0,
+     2.5
     ],
     "b": [
-     7,
-     5
+     0,
+     7.1
     ],
     "kind": "glass"
    },
    {
     "a": [
-     -7,
-     5
+     0,
+     0
     ],
     "b": [
-     7,
-     5
-    ]
+     5.2,
+     0
+    ],
+    "finish": "basalt"
    },
    {
     "a": [
-     -7,
-     -5
+     5.2,
+     0
     ],
     "b": [
-     -7,
-     5
+     10,
+     0
     ],
-    "gaps": [
-     {
-      "at": 8,
-      "w": 1.1
-     }
-    ]
+    "finish": "washi"
    },
    {
     "a": [
-     -4,
-     -5
+     10,
+     0
     ],
     "b": [
-     -4,
-     5
+     10,
+     7.1
     ],
+    "finish": "washi",
     "gaps": [
      {
-      "at": 2.5,
-      "w": 2.4,
-      "top": 2.6
-     },
-     {
-      "at": 7.5,
+      "at": 1.25,
       "w": 1
      }
     ]
    },
    {
     "a": [
-     -4,
-     0
+     0,
+     7.1
     ],
     "b": [
-     1,
-     0
-    ]
+     10,
+     7.1
+    ],
+    "finish": "washi"
    },
    {
     "a": [
-     1,
-     0
+     0,
+     2.5
     ],
     "b": [
-     7,
-     0
+     5.2,
+     2.5
     ],
     "kind": "paper",
     "gaps": [
      {
-      "at": 3.2,
+      "at": 4.6,
+      "w": 1.2
+     }
+    ]
+   },
+   {
+    "a": [
+     5.2,
+     0
+    ],
+    "b": [
+     5.2,
+     2.5
+    ],
+    "finish": "basalt"
+   },
+   {
+    "a": [
+     5.2,
+     2.5
+    ],
+    "b": [
+     10,
+     2.5
+    ],
+    "finish": "oak",
+    "gaps": [
+     {
+      "at": 3.1,
       "w": 1.6
-     }
-    ]
-   },
-   {
-    "a": [
-     1,
-     0
-    ],
-    "b": [
-     1,
-     5
-    ],
-    "kind": "paper",
-    "gaps": [
-     {
-      "at": 2.5,
-      "w": 1
      }
     ]
    }
@@ -309,383 +304,352 @@
    {
     "kind": "door",
     "at": [
-     -6.96,
-     3
+     9.96,
+     1.25
     ],
     "rot": 90,
-    "w": 1.1
+    "w": 1
    },
    {
-    "kind": "bench",
+    "kind": "wardrobe",
     "at": [
-     -6.6,
-     -1.4
+     6.7,
+     0.32
     ],
-    "rot": 90,
-    "w": 1.8
+    "w": 2.6
    },
    {
-    "kind": "ikebana",
+    "kind": "windowBench",
     "at": [
-     -6.6,
-     -2.1
+     0.42,
+     4.8
     ],
-    "y": 0.47
+    "rot": -90,
+    "w": 4.5
+   },
+   {
+    "kind": "roundTable",
+    "at": [
+     1.4,
+     4.85
+    ]
+   },
+   {
+    "kind": "loungeChair",
+    "at": [
+     1.65,
+     3.6
+    ],
+    "rot": 10
+   },
+   {
+    "kind": "loungeChair",
+    "at": [
+     1.65,
+     6.1
+    ],
+    "rot": 170
+   },
+   {
+    "kind": "floorLamp",
+    "at": [
+     2.35,
+     6.75
+    ],
+    "light": true
+   },
+   {
+    "kind": "slats",
+    "at": [
+     1.5,
+     7.06
+    ],
+    "rot": 180,
+    "w": 1.6
+   },
+   {
+    "kind": "footTable",
+    "at": [
+     2.85,
+     4.8
+    ],
+    "rot": -90,
+    "w": 2.4
+   },
+   {
+    "kind": "tatami",
+    "at": [
+     3.5,
+     4.8
+    ],
+    "rot": -90,
+    "w": 2.6,
+    "d": 1
+   },
+   {
+    "kind": "tatami",
+    "at": [
+     4.9,
+     6.6
+    ],
+    "w": 2,
+    "d": 0.8
+   },
+   {
+    "kind": "twinBeds",
+    "at": [
+     4.9,
+     4.8
+    ],
+    "rot": -90
+   },
+   {
+    "kind": "headboard",
+    "at": [
+     6.26,
+     4.8
+    ],
+    "rot": -90,
+    "w": 3.2,
+    "light": true
+   },
+   {
+    "kind": "console",
+    "at": [
+     4.9,
+     6.92
+    ],
+    "rot": 180,
+    "w": 1.4
    },
    {
     "kind": "art",
     "at": [
-     -5.5,
-     4.9
+     4.9,
+     7.06
     ],
     "rot": 180,
     "y": 1.55,
-    "w": 1.3,
-    "h": 1.7
+    "w": 0.55,
+    "h": 0.75
    },
    {
-    "kind": "shelf",
+    "kind": "bonsai",
     "at": [
-     -4.32,
-     2.6
+     5.35,
+     6.9
     ],
-    "rot": -90,
-    "w": 1.6
-   },
-   {
-    "kind": "dining",
-    "at": [
-     -2,
-     -3.1
-    ],
-    "w": 2.6
-   },
-   {
-    "kind": "pendant",
-    "at": [
-     -2,
-     -3.1
-    ],
-    "h": 2.05,
-    "light": true
-   },
-   {
-    "kind": "plant",
-    "at": [
-     -3.4,
-     -4.5
-    ],
-    "h": 1.9
-   },
-   {
-    "kind": "rug",
-    "at": [
-     3.6,
-     -2.5
-    ],
-    "w": 3.4,
-    "d": 2.6
-   },
-   {
-    "kind": "sofa",
-    "at": [
-     3.6,
-     -0.85
-    ],
-    "rot": 180,
-    "w": 2.6
-   },
-   {
-    "kind": "lowTable",
-    "at": [
-     3.6,
-     -2.5
-    ],
-    "w": 1.4,
-    "d": 0.8
-   },
-   {
-    "kind": "armchair",
-    "at": [
-     1.6,
-     -2.7
-    ],
-    "rot": 90
-   },
-   {
-    "kind": "armchair",
-    "at": [
-     5.6,
-     -3.7
-    ],
-    "rot": -120
-   },
-   {
-    "kind": "sideTable",
-    "at": [
-     5.3,
-     -0.8
-    ]
-   },
-   {
-    "kind": "plant",
-    "at": [
-     6.4,
-     -4.4
-    ],
-    "h": 2.1
-   },
-   {
-    "kind": "rug",
-    "at": [
-     4.2,
-     3.6
-    ],
-    "w": 3.2,
-    "d": 2.4
-   },
-   {
-    "kind": "bed",
-    "at": [
-     4.2,
-     3.82
-    ],
-    "rot": 180,
-    "light": true
+    "y": 0.8
    },
    {
     "kind": "desk",
     "at": [
-     6.5,
-     1.1
+     8.4,
+     6.78
     ],
-    "rot": -90,
+    "rot": 180,
+    "w": 1.5,
     "light": true
    },
    {
-    "kind": "plant",
+    "kind": "bonsai",
     "at": [
-     1.5,
-     0.55
-    ],
-    "h": 1.3
+     9.6,
+     2.75
+    ]
    },
    {
     "kind": "tub",
     "at": [
-     -1.5,
-     3.9
+     0.85,
+     1.25
     ],
-    "w": 1.8,
-    "d": 1,
+    "rot": 90,
+    "w": 1.7,
+    "d": 0.95,
     "variant": "ofuro"
    },
    {
     "kind": "vanity",
     "at": [
-     -1.6,
-     0.34
+     3.4,
+     0.28
     ],
     "w": 2.2
    },
    {
-    "kind": "bowl",
+    "kind": "stool",
     "at": [
-     -3.6,
-     4.6
+     3.4,
+     0.95
     ]
    }
   ],
   "stops": [
    {
     "pos": [
-     -6.1,
-     1.62,
-     3.5
+     9.3,
+     1.6,
+     1.25
     ],
     "look": [
-     -5.4,
-     1.35,
-     -3
+     5.6,
+     1.45,
+     1.6
     ],
-    "room": "The genkan",
-    "title": "Shoes off, voice down",
-    "body": "You step up from basalt onto camphor, the way every Japanese house is entered. A bench, a branch in a stone vase, nothing else asking for attention.",
+    "room": "The entrance",
+    "title": "Shoes off at the door",
+    "body": "A short hall of camphor and washi, with the wardrobe built into the wall. The room stays out of sight until you turn the corner.",
     "facts": [
      [
       "Floor",
-      "Basalt"
+      "Camphor"
      ],
      [
       "Walls",
-      "Plaster and washi"
+      "Washi paper on timber"
      ]
     ]
    },
    {
     "pos": [
-     -4.9,
-     1.62,
-     -2.5
-    ],
-    "look": [
-     -1,
-     1.4,
-     -3.2
-    ]
-   },
-   {
-    "pos": [
-     -3.2,
+     8.3,
      1.6,
-     -1.5
-    ],
-    "look": [
-     -1.4,
-     1.05,
-     -4.6
-    ],
-    "room": "The dining room",
-    "title": "A table for six by the glass",
-    "body": "Breakfast is brought up on lacquer trays. Most guests end up eating it here, watching the city switch its lights off one office at a time.",
-    "facts": [
-     [
-      "Table",
-      "Solid camphor"
-     ],
-     [
-      "Seats",
-      "Six"
-     ]
-    ]
-   },
-   {
-    "pos": [
-     -0.3,
-     1.62,
-     -1.5
-    ],
-    "look": [
-     5,
-     1.4,
-     -3.6
-    ]
-   },
-   {
-    "pos": [
-     1,
-     1.58,
-     -0.7
-    ],
-    "look": [
-     6.3,
-     1.2,
-     -4.4
-    ],
-    "room": "The living room",
-    "title": "Tokyo goes quiet at this height",
-    "body": "Two walls of glass meet without a column. The gardens of the Imperial Palace are below and to the left; the sofa is low enough that the city stays out of sight until you stand.",
-    "facts": [
-     [
-      "Glass",
-      "Floor to ceiling, two sides"
-     ],
-     [
-      "Facing",
-      "North and east"
-     ]
-    ]
-   },
-   {
-    "pos": [
-     4.2,
-     1.62,
-     -0.7
-    ],
-    "look": [
-     4.3,
-     1.4,
-     3
-    ]
-   },
-   {
-    "pos": [
-     4.1,
-     1.62,
-     0.7
-    ],
-    "look": [
-     3,
-     1.2,
-     3
-    ]
-   },
-   {
-    "pos": [
-     1.9,
-     1.6,
-     0.75
+     2.1
     ],
     "look": [
      6,
+     1.4,
+     5
+    ]
+   },
+   {
+    "pos": [
+     7.4,
+     1.6,
+     6.5
+    ],
+    "look": [
+     2,
+     1.2,
+     4.5
+    ]
+   },
+   {
+    "pos": [
+     6.1,
+     1.62,
+     6.8
+    ],
+    "look": [
+     1,
      0.9,
-     3.6
+     3.4
     ],
     "room": "The bedroom",
-    "title": "Sleep facing east",
-    "body": "The shoji slide shut behind you and the light turns the colour of paper. The bed faces the window so the morning wakes you, not the phone.",
+    "title": "Twin beds, or one king",
+    "body": "The beds sit low on a camphor platform and face the window, so the last thing you see at night is the city and the first in the morning is the palace gardens.",
     "facts": [
      [
-      "Bed",
-      "King, low camphor frame"
+      "Beds",
+      "King or twins"
      ],
      [
-      "Desk",
-      "At the window"
+      "Underfoot",
+      "Tatami mats, edged in black"
      ]
     ]
    },
    {
     "pos": [
-     1.6,
-     1.62,
-     2.5
+     3.45,
+     1.58,
+     6.6
     ],
     "look": [
-     -2,
-     1.3,
-     3.2
+     1,
+     1.2,
+     5
     ]
    },
    {
     "pos": [
-     -0.2,
-     1.6,
-     1.4
+     2.5,
+     1.45,
+     6.45
     ],
     "look": [
-     -2.2,
-     0.6,
-     4
+     0.2,
+     1.05,
+     4.3
+    ],
+    "room": "The lounge",
+    "title": "A daybed at the glass",
+    "body": "A long cushioned bench runs the width of the window on a ledge of dark stone. This is where people watch the sun go down behind Fuji, so the chairs face west.",
+    "facts": [
+     [
+      "Seating",
+      "Daybed and two chairs"
+     ],
+     [
+      "Facing",
+      "West, over the gardens"
+     ]
+    ]
+   },
+   {
+    "pos": [
+     2.15,
+     1.55,
+     3.1
+    ],
+    "look": [
+     4,
+     1.4,
+     2.6
+    ]
+   },
+   {
+    "pos": [
+     4.6,
+     1.6,
+     2.3
+    ],
+    "look": [
+     2,
+     1.2,
+     1
+    ]
+   },
+   {
+    "pos": [
+     3.7,
+     1.6,
+     1.55
+    ],
+    "look": [
+     0.4,
+     0.75,
+     1.2
     ],
     "room": "The bathroom",
-    "title": "An ofuro cut from basalt",
-    "body": "Fill it to the brim and sink in to the shoulders. The stone holds the heat long after the water has stopped running.",
+    "title": "A furo by the window",
+    "body": "Through the shoji, dark stone on every side and a deep tub against the glass. Fill it to the brim and the gardens are level with your shoulders.",
     "facts": [
      [
       "Bath",
-      "Ofuro, 68 cm deep"
+      "Furo, deep enough to sit in"
      ],
      [
       "Vanity",
-      "Twin basins"
+      "Two basins in stone"
      ]
     ]
    }
   ],
   "outro": {
    "title": "Make it yours",
-   "body": "Every suite on these floors is laid out a little differently. Tell us how you like to arrive, sleep and bathe, and we will hold the one that fits.",
+   "body": "Deluxe Suites face west, over the palace and towards Fuji. Tell us when you are coming and we will hold one on the highest floor we have.",
    "facts": [
     [
      "Check-in",
@@ -694,1364 +658,6 @@
     [
      "Arrival",
      "Haneda, 30 minutes"
-    ]
-   ]
-  }
- },
- "amangiri": {
-  "id": "amangiri",
-  "place": "Amangiri, Utah",
-  "title": "Set Into the Mesa",
-  "lede": "A pavilion of poured stone in the high desert of southern Utah, coloured to match the sand it stands on. From the terrace, the only lights at night are the stars.",
-  "gauge": {
-   "label": "Metres above the desert floor",
-   "from": 420,
-   "to": 4,
-   "unit": "m",
-   "name": "Desert Pool Suite",
-   "note": "A glass wall slides away onto the terrace, the pool and the fire.",
-   "facts": [
-    [
-     "View",
-     "Sandstone mesas"
-    ],
-    [
-     "Pool",
-     "Private, heated"
-    ],
-    [
-     "Terrace",
-     "Fire pit and daybed"
-    ]
-   ]
-  },
-  "figures": [
-   [
-    "600",
-    "Acres of Canyon Point"
-   ],
-   [
-    "34",
-    "Suites"
-   ],
-   [
-    "5",
-    "National parks within reach"
-   ]
-  ],
-  "plate": "Desert Pool Suite",
-  "height": 3.4,
-  "iso": 2.75,
-  "sky": {
-   "top": "#6d7da5",
-   "glow": "#efb28e",
-   "horizon": "#f7d5b1",
-   "haze": "rgba(240,200,170,0.5)"
-  },
-  "sun": [
-   -40,
-   7,
-   -10
-  ],
-  "view": "desert",
-  "finishes": {
-   "floor": {
-    "paint": "tiles",
-    "base": "#d8cab5",
-    "arg": 1,
-    "tile": 1.4,
-    "rough": 0.7
-   },
-   "deck": {
-    "paint": "tiles",
-    "base": "#c6a07f",
-    "arg": 2,
-    "tile": 1.2,
-    "rough": 0.9
-   },
-   "stone": {
-    "paint": "stone",
-    "base": "#dacbb5",
-    "arg": 0.4,
-    "tile": 1.6,
-    "rough": 0.5
-   },
-   "wall": {
-    "paint": "plaster",
-    "base": "#d6c7b4",
-    "arg": 0.08,
-    "tile": 3.5,
-    "rough": 0.95
-   },
-   "ceiling": {
-    "paint": "plaster",
-    "base": "#d4c4b0",
-    "arg": 0.06,
-    "tile": 3.5
-   },
-   "slab": {
-    "paint": "plaster",
-    "base": "#c4ac93",
-    "tile": 3
-   },
-   "wood": {
-    "paint": "grain",
-    "base": "#7a5a41",
-    "tile": 1.4,
-    "rough": 0.6
-   },
-   "dark": {
-    "base": "#3b2f28",
-    "rough": 0.55
-   },
-   "fabric": {
-    "paint": "weave",
-    "base": "#cdbba3",
-    "tile": 0.8,
-    "rough": 1
-   },
-   "linen": {
-    "paint": "weave",
-    "base": "#efe7dc",
-    "tile": 0.8,
-    "rough": 1
-   },
-   "basalt": {
-    "paint": "speckle",
-    "base": "#5a524b",
-    "tile": 1,
-    "rough": 0.7
-   },
-   "rug": {
-    "paint": "weave",
-    "base": "#b59a7e",
-    "tile": 1.2,
-    "rough": 1
-   },
-   "sandstone": {
-    "paint": "speckle",
-    "base": "#a8603d",
-    "tile": 2,
-    "rough": 0.95
-   },
-   "accent": {
-    "base": "#7a3b22"
-   },
-   "water": {
-    "base": "#5c9da2"
-   }
-  },
-  "rooms": [
-   {
-    "name": "Terrace",
-    "rect": [
-     -8,
-     -9,
-     7,
-     -3
-    ],
-    "floor": "deck",
-    "ceiling": false
-   },
-   {
-    "name": "Bathroom",
-    "rect": [
-     -8,
-     -3,
-     -3,
-     1
-    ],
-    "floor": "stone"
-   },
-   {
-    "name": "Entrance",
-    "rect": [
-     -8,
-     1,
-     -3,
-     6
-    ],
-    "floor": "floor"
-   },
-   {
-    "name": "Suite",
-    "rect": [
-     -3,
-     -3,
-     7,
-     6
-    ],
-    "floor": "floor"
-   }
-  ],
-  "walls": [
-   {
-    "a": [
-     -8,
-     -3
-    ],
-    "b": [
-     7,
-     -3
-    ],
-    "kind": "glass",
-    "gaps": [
-     {
-      "at": 11,
-      "w": 1.8
-     }
-    ]
-   },
-   {
-    "a": [
-     -8,
-     6
-    ],
-    "b": [
-     7,
-     6
-    ],
-    "gaps": [
-     {
-      "at": 2.5,
-      "w": 1.1
-     }
-    ]
-   },
-   {
-    "a": [
-     -8,
-     -3
-    ],
-    "b": [
-     -8,
-     6
-    ]
-   },
-   {
-    "a": [
-     7,
-     -3
-    ],
-    "b": [
-     7,
-     6
-    ]
-   },
-   {
-    "a": [
-     -3,
-     -3
-    ],
-    "b": [
-     -3,
-     6
-    ],
-    "gaps": [
-     {
-      "at": 2,
-      "w": 0.9
-     },
-     {
-      "at": 6.5,
-      "w": 1.6,
-      "top": 2.8
-     }
-    ]
-   },
-   {
-    "a": [
-     -8,
-     1
-    ],
-    "b": [
-     -3,
-     1
-    ]
-   },
-   {
-    "a": [
-     -8,
-     -9
-    ],
-    "b": [
-     7,
-     -9
-    ],
-    "kind": "low"
-   },
-   {
-    "a": [
-     -8,
-     -9
-    ],
-    "b": [
-     -8,
-     -3
-    ]
-   },
-   {
-    "a": [
-     7,
-     -9
-    ],
-    "b": [
-     7,
-     -3
-    ]
-   }
-  ],
-  "pieces": [
-   {
-    "kind": "door",
-    "at": [
-     -5.5,
-     5.96
-    ],
-    "w": 1.1
-   },
-   {
-    "kind": "bench",
-    "at": [
-     -7.6,
-     3.6
-    ],
-    "rot": 90,
-    "w": 1.6
-   },
-   {
-    "kind": "art",
-    "at": [
-     -5.5,
-     1.1
-    ],
-    "y": 1.6,
-    "w": 1.1,
-    "h": 1.4
-   },
-   {
-    "kind": "plant",
-    "at": [
-     -3.6,
-     5.4
-    ],
-    "h": 1.6
-   },
-   {
-    "kind": "rug",
-    "at": [
-     0.6,
-     -0.7
-    ],
-    "w": 3.4,
-    "d": 2.6
-   },
-   {
-    "kind": "sofa",
-    "at": [
-     0.6,
-     0.75
-    ],
-    "rot": 180,
-    "w": 2.6
-   },
-   {
-    "kind": "lowTable",
-    "at": [
-     0.6,
-     -0.9
-    ],
-    "w": 1.3,
-    "d": 0.8
-   },
-   {
-    "kind": "armchair",
-    "at": [
-     -1.7,
-     -1.5
-    ],
-    "rot": 70
-   },
-   {
-    "kind": "sideTable",
-    "at": [
-     2.4,
-     0.9
-    ]
-   },
-   {
-    "kind": "rug",
-    "at": [
-     3.8,
-     4.1
-    ],
-    "w": 3.2,
-    "d": 2.4
-   },
-   {
-    "kind": "bed",
-    "at": [
-     3.8,
-     4.85
-    ],
-    "rot": 180,
-    "light": true
-   },
-   {
-    "kind": "desk",
-    "at": [
-     6.55,
-     0.2
-    ],
-    "rot": -90,
-    "light": true
-   },
-   {
-    "kind": "plant",
-    "at": [
-     6.4,
-     -2.4
-    ],
-    "h": 1.7
-   },
-   {
-    "kind": "tub",
-    "at": [
-     -5.5,
-     -2.05
-    ],
-    "w": 1.8,
-    "d": 0.9
-   },
-   {
-    "kind": "vanity",
-    "at": [
-     -7.7,
-     -0.6
-    ],
-    "rot": 90,
-    "w": 1.8
-   },
-   {
-    "kind": "bowl",
-    "at": [
-     -3.6,
-     0.5
-    ]
-   },
-   {
-    "kind": "pool",
-    "at": [
-     3,
-     -6.6
-    ],
-    "w": 6,
-    "d": 2.6
-   },
-   {
-    "kind": "rock",
-    "at": [
-     6.2,
-     -5.1
-    ],
-    "w": 1.1
-   },
-   {
-    "kind": "lounger",
-    "at": [
-     -1.1,
-     -6.3
-    ],
-    "rot": 180
-   },
-   {
-    "kind": "lounger",
-    "at": [
-     -2.1,
-     -6.3
-    ],
-    "rot": 180
-   },
-   {
-    "kind": "daybed",
-    "at": [
-     -5.3,
-     -4.3
-    ],
-    "rot": 180
-   },
-   {
-    "kind": "firepit",
-    "at": [
-     -5.3,
-     -6.7
-    ]
-   }
-  ],
-  "stops": [
-   {
-    "pos": [
-     -6.6,
-     1.6,
-     5
-    ],
-    "look": [
-     -3.4,
-     1.4,
-     3.4
-    ],
-    "room": "The entrance",
-    "title": "Through a slot in the stone",
-    "body": "You come in from the heat through a narrow passage, the walls close and cool, and the room opens only once you have turned the corner.",
-    "facts": [
-     [
-      "Walls",
-      "Concrete tinted with local sand"
-     ],
-     [
-      "Floor",
-      "Limestone"
-     ]
-    ]
-   },
-   {
-    "pos": [
-     -4.1,
-     1.6,
-     3.6
-    ],
-    "look": [
-     2,
-     1.3,
-     -2
-    ]
-   },
-   {
-    "pos": [
-     -1.9,
-     1.62,
-     4.4
-    ],
-    "look": [
-     4,
-     1.05,
-     -4
-    ],
-    "room": "The suite",
-    "title": "The desert, framed",
-    "body": "One room, one long sheet of glass. The architects kept everything inside low and pale so that the mesa does the talking.",
-    "facts": [
-     [
-      "Glass",
-      "Sliding, full width"
-     ],
-     [
-      "Ceiling",
-      "3.4 m"
-     ]
-    ]
-   },
-   {
-    "pos": [
-     2.6,
-     1.62,
-     2.2
-    ],
-    "look": [
-     5.5,
-     1.2,
-     0.5
-    ]
-   },
-   {
-    "pos": [
-     5.9,
-     1.68,
-     2.4
-    ],
-    "look": [
-     1.5,
-     0.85,
-     -4.5
-    ],
-    "room": "The bedroom",
-    "title": "Wake to the mesa",
-    "body": "The bed faces north so the sun never lands in your eyes, only on the rock, which turns from violet to orange while you decide whether to get up.",
-    "facts": [
-     [
-      "Bed",
-      "King"
-     ],
-     [
-      "Desk",
-      "Against the side wall"
-     ]
-    ]
-   },
-   {
-    "pos": [
-     -1.8,
-     1.6,
-     -1
-    ],
-    "look": [
-     -5,
-     1.3,
-     -1.2
-    ]
-   },
-   {
-    "pos": [
-     -4.1,
-     1.6,
-     -0.6
-    ],
-    "look": [
-     -5.6,
-     0.6,
-     -3.6
-    ],
-    "room": "The bathroom",
-    "title": "A bath with the sky in it",
-    "body": "The tub stands at the glass. Nobody can see in for miles, so there is no blind, and the evening comes in as you lie there.",
-    "facts": [
-     [
-      "Bath",
-      "Freestanding, at the window"
-     ],
-     [
-      "Vanity",
-      "Twin basins"
-     ]
-    ]
-   },
-   {
-    "pos": [
-     -1.8,
-     1.6,
-     -1.1
-    ],
-    "look": [
-     3,
-     1.2,
-     -4
-    ]
-   },
-   {
-    "pos": [
-     3,
-     1.62,
-     -2.4
-    ],
-    "look": [
-     2,
-     1.2,
-     -7
-    ]
-   },
-   {
-    "pos": [
-     2.4,
-     1.65,
-     -3.9
-    ],
-    "look": [
-     -4.5,
-     0.5,
-     -7.4
-    ],
-    "room": "The terrace",
-    "title": "Where the evening goes",
-    "body": "A fire is laid before you come back from dinner. The pool is heated, the daybed faces the flames, and the desert goes completely silent.",
-    "facts": [
-     [
-      "Pool",
-      "Private, heated"
-     ],
-     [
-      "Fire pit",
-      "Lit at dusk"
-     ]
-    ]
-   }
-  ],
-  "outro": {
-   "title": "Make it yours",
-   "body": "Some suites look at the mesa, some at the canyon, some at both. Tell us when you are coming and which way you would like to face.",
-   "facts": [
-    [
-     "Airport",
-     "Page, 25 minutes"
-    ],
-    [
-     "Season",
-     "All year"
-    ]
-   ]
-  }
- },
- "amanpuri": {
-  "id": "amanpuri",
-  "place": "Amanpuri, Thailand",
-  "title": "Where Aman Began",
-  "lede": "Phuket’s west coast in 1988: an old coconut plantation on a headland, Thai pavilions among the palms, the Andaman Sea below. The first Aman, and still the one people come back to.",
-  "gauge": {
-   "label": "Metres above the Andaman Sea",
-   "from": 140,
-   "to": 18,
-   "unit": "m",
-   "name": "Ocean Pool Pavilion",
-   "note": "Bedroom and bath under one roof, the pool and the sala on the deck below.",
-   "facts": [
-    [
-     "View",
-     "Andaman Sea"
-    ],
-    [
-     "Pool",
-     "Private, on the deck"
-    ],
-    [
-     "Sala",
-     "Open-sided, by the water"
-    ]
-   ]
-  },
-  "figures": [
-   [
-    "1988",
-    "Where Aman began"
-   ],
-   [
-    "40",
-    "Pavilions under the palms"
-   ],
-   [
-    "West",
-    "Facing the sunset"
-   ]
-  ],
-  "plate": "Ocean Pool Pavilion",
-  "height": 2.9,
-  "iso": 2.9,
-  "sky": {
-   "top": "#7b8fb4",
-   "glow": "#f2b497",
-   "horizon": "#f8d2b0",
-   "haze": "rgba(245,205,180,0.45)"
-  },
-  "sun": [
-   -28,
-   6,
-   -34
-  ],
-  "view": "sea",
-  "finishes": {
-   "floor": {
-    "paint": "planks",
-    "base": "#8a6446",
-    "arg": 6,
-    "tile": 1.4,
-    "rough": 0.6
-   },
-   "deck": {
-    "paint": "planks",
-    "base": "#9b7656",
-    "arg": 8,
-    "tile": 1.6,
-    "rough": 0.85
-   },
-   "stone": {
-    "paint": "tiles",
-    "base": "#cbbca6",
-    "arg": 2,
-    "tile": 1.2,
-    "rough": 0.55
-   },
-   "wall": {
-    "paint": "plaster",
-    "base": "#ede3d3",
-    "arg": 0.05,
-    "tile": 3
-   },
-   "roof": {
-    "paint": "planks",
-    "base": "#6d4c33",
-    "arg": 5,
-    "tile": 1.2,
-    "rough": 0.8
-   },
-   "slab": {
-    "paint": "plaster",
-    "base": "#cdbfa8",
-    "tile": 3
-   },
-   "wood": {
-    "paint": "grain",
-    "base": "#6e4d35",
-    "tile": 1.4,
-    "rough": 0.6
-   },
-   "dark": {
-    "base": "#2d241e",
-    "rough": 0.55
-   },
-   "fabric": {
-    "paint": "weave",
-    "base": "#e4dccd",
-    "tile": 0.8,
-    "rough": 1
-   },
-   "linen": {
-    "paint": "weave",
-    "base": "#f4efe6",
-    "tile": 0.8,
-    "rough": 1
-   },
-   "basalt": {
-    "paint": "speckle",
-    "base": "#4f4a45",
-    "tile": 1,
-    "rough": 0.7
-   },
-   "rug": {
-    "paint": "weave",
-    "base": "#cbb79b",
-    "tile": 1.2,
-    "rough": 1
-   },
-   "accent": {
-    "base": "#9b5a2e"
-   },
-   "water": {
-    "base": "#3e8e94"
-   }
-  },
-  "rooms": [
-   {
-    "name": "Deck",
-    "rect": [
-     -9,
-     -11,
-     3,
-     -3
-    ],
-    "floor": "deck",
-    "ceiling": false
-   },
-   {
-    "name": "Deck",
-    "rect": [
-     3,
-     -6,
-     9,
-     -3
-    ],
-    "floor": "deck",
-    "ceiling": false
-   },
-   {
-    "name": "Sala",
-    "rect": [
-     3,
-     -11,
-     9,
-     -6
-    ],
-    "floor": "floor",
-    "ceiling": "roof",
-    "gable": true
-   },
-   {
-    "name": "Bathroom",
-    "rect": [
-     -9,
-     -3,
-     -2,
-     4
-    ],
-    "floor": "stone",
-    "ceiling": "roof",
-    "gable": true
-   },
-   {
-    "name": "Bedroom",
-    "rect": [
-     -2,
-     -3,
-     6,
-     4
-    ],
-    "floor": "floor",
-    "ceiling": "roof",
-    "gable": true
-   }
-  ],
-  "walls": [
-   {
-    "a": [
-     -9,
-     -3
-    ],
-    "b": [
-     6,
-     -3
-    ],
-    "kind": "glass",
-    "gaps": [
-     {
-      "at": 11,
-      "w": 2.4
-     }
-    ]
-   },
-   {
-    "a": [
-     -9,
-     4
-    ],
-    "b": [
-     6,
-     4
-    ],
-    "gaps": [
-     {
-      "at": 13,
-      "w": 1.1
-     }
-    ]
-   },
-   {
-    "a": [
-     6,
-     -3
-    ],
-    "b": [
-     6,
-     4
-    ],
-    "gaps": [
-     {
-      "at": 3.5,
-      "w": 2,
-      "sill": 0.9,
-      "top": 2.3
-     }
-    ]
-   },
-   {
-    "a": [
-     -9,
-     -3
-    ],
-    "b": [
-     -9,
-     4
-    ]
-   },
-   {
-    "a": [
-     -2,
-     -3
-    ],
-    "b": [
-     -2,
-     4
-    ],
-    "gaps": [
-     {
-      "at": 3.5,
-      "w": 1
-     }
-    ]
-   }
-  ],
-  "pieces": [
-   {
-    "kind": "door",
-    "at": [
-     4,
-     3.96
-    ],
-    "w": 1.1
-   },
-   {
-    "kind": "rug",
-    "at": [
-     2,
-     2.3
-    ],
-    "w": 3.2,
-    "d": 2.6
-   },
-   {
-    "kind": "bed",
-    "at": [
-     2,
-     2.85
-    ],
-    "rot": 180,
-    "light": true
-   },
-   {
-    "kind": "armchair",
-    "at": [
-     5.1,
-     -1.9
-    ],
-    "rot": -135
-   },
-   {
-    "kind": "sideTable",
-    "at": [
-     4.3,
-     -2.4
-    ]
-   },
-   {
-    "kind": "art",
-    "at": [
-     -1.9,
-     0.9
-    ],
-    "rot": 90,
-    "y": 1.5,
-    "w": 1,
-    "h": 1.3
-   },
-   {
-    "kind": "plant",
-    "at": [
-     5.4,
-     3.4
-    ],
-    "h": 1.6
-   },
-   {
-    "kind": "tub",
-    "at": [
-     -5.5,
-     -1.7
-    ],
-    "w": 1.8,
-    "d": 0.9
-   },
-   {
-    "kind": "vanity",
-    "at": [
-     -8.7,
-     1.4
-    ],
-    "rot": 90,
-    "w": 1.8
-   },
-   {
-    "kind": "plant",
-    "at": [
-     -2.6,
-     3.4
-    ],
-    "h": 1.4
-   },
-   {
-    "kind": "bowl",
-    "at": [
-     -8.4,
-     3.5
-    ]
-   },
-   {
-    "kind": "pool",
-    "at": [
-     -3.5,
-     -7.3
-    ],
-    "w": 9,
-    "d": 3.4
-   },
-   {
-    "kind": "lounger",
-    "at": [
-     -7.1,
-     -4.3
-    ],
-    "rot": 180
-   },
-   {
-    "kind": "lounger",
-    "at": [
-     -6.1,
-     -4.3
-    ],
-    "rot": 180
-   },
-   {
-    "kind": "palm",
-    "at": [
-     -8.4,
-     -10.4
-    ],
-    "h": 6.5
-   },
-   {
-    "kind": "palm",
-    "at": [
-     8.4,
-     -3.6
-    ],
-    "h": 7
-   },
-   {
-    "kind": "plant",
-    "at": [
-     2.5,
-     -3.6
-    ],
-    "h": 1.2
-   },
-   {
-    "kind": "post",
-    "at": [
-     3.25,
-     -10.75
-    ]
-   },
-   {
-    "kind": "post",
-    "at": [
-     8.75,
-     -10.75
-    ]
-   },
-   {
-    "kind": "post",
-    "at": [
-     3.25,
-     -6.25
-    ]
-   },
-   {
-    "kind": "post",
-    "at": [
-     8.75,
-     -6.25
-    ]
-   },
-   {
-    "kind": "daybed",
-    "at": [
-     6,
-     -8.6
-    ],
-    "rot": 180,
-    "w": 2.4
-   },
-   {
-    "kind": "sideTable",
-    "at": [
-     7.9,
-     -9.6
-    ]
-   }
-  ],
-  "stops": [
-   {
-    "pos": [
-     -8.2,
-     1.6,
-     -9.8
-    ],
-    "look": [
-     2,
-     1,
-     -6.4
-    ],
-    "room": "The deck",
-    "title": "Arrive by the water",
-    "body": "A path through the palms brings you out at the end of the pool. Everything on the deck is teak, oiled every month against the salt.",
-    "facts": [
-     [
-      "Deck",
-      "Teak"
-     ],
-     [
-      "Shade",
-      "Palms and the sala roof"
-     ]
-    ]
-   },
-   {
-    "pos": [
-     1.2,
-     1.6,
-     -4.6
-    ],
-    "look": [
-     2,
-     1.4,
-     1
-    ]
-   },
-   {
-    "pos": [
-     1.5,
-     1.6,
-     -1.7
-    ],
-    "look": [
-     2.4,
-     0.9,
-     3.2
-    ],
-    "room": "The bedroom",
-    "title": "Under a roof of teak",
-    "body": "The roof is pitched like a Thai house, open to the rafters, so the room stays cool without much help. Doors fold back onto the deck.",
-    "facts": [
-     [
-      "Roof",
-      "Pitched, open rafters"
-     ],
-     [
-      "Bed",
-      "King"
-     ]
-    ]
-   },
-   {
-    "pos": [
-     -1,
-     1.6,
-     0.5
-    ],
-    "look": [
-     -5,
-     1.3,
-     0.5
-    ]
-   },
-   {
-    "pos": [
-     -3,
-     1.6,
-     0.9
-    ],
-    "look": [
-     -5.6,
-     0.6,
-     -2.6
-    ],
-    "room": "The bathroom",
-    "title": "Bathe with the doors open",
-    "body": "A stone tub at the glass and nothing between you and the sea but the pool. The breeze does the rest.",
-    "facts": [
-     [
-      "Bath",
-      "Freestanding"
-     ],
-     [
-      "Floor",
-      "Stone"
-     ]
-    ]
-   },
-   {
-    "pos": [
-     -1.1,
-     1.6,
-     0.2
-    ],
-    "look": [
-     2,
-     1.4,
-     -4
-    ]
-   },
-   {
-    "pos": [
-     1.9,
-     1.6,
-     -3.7
-    ],
-    "look": [
-     -2,
-     1,
-     -8
-    ]
-   },
-   {
-    "pos": [
-     0.2,
-     1.62,
-     -4.9
-    ],
-    "look": [
-     -5.5,
-     0.25,
-     -8.6
-    ],
-    "room": "The pool",
-    "title": "Nine metres, all yours",
-    "body": "Long enough for lengths, deep enough to cool off at noon. The water runs right up to the deck so it seems to fall into the sea.",
-    "facts": [
-     [
-      "Pool",
-      "Nine metres"
-     ],
-     [
-      "Loungers",
-      "Two"
-     ]
-    ]
-   },
-   {
-    "pos": [
-     3.6,
-     1.6,
-     -4.8
-    ],
-    "look": [
-     6.5,
-     1.1,
-     -9
-    ]
-   },
-   {
-    "pos": [
-     4.4,
-     1.6,
-     -5.4
-    ],
-    "look": [
-     7,
-     0.9,
-     -10.6
-    ],
-    "room": "The sala",
-    "title": "A pavilion for doing nothing",
-    "body": "Four posts and a roof at the edge of the headland. This is where most afternoons end, and where the sun goes down into the sea.",
-    "facts": [
-     [
-      "Daybed",
-      "Under the sala roof"
-     ],
-     [
-      "Facing",
-      "West, over the sea"
-     ]
-    ]
-   }
-  ],
-  "outro": {
-   "title": "Make it yours",
-   "body": "Pavilions sit at different heights on the headland, closer to the sea or deeper in the palms. Tell us which you would rather wake up to.",
-   "facts": [
-    [
-     "Airport",
-     "Phuket, 20 minutes"
-    ],
-    [
-     "Best months",
-     "November to April"
     ]
    ]
   }

@@ -1,12 +1,10 @@
 import { readFileSync } from 'node:fs'
 import { CatmullRomCurve3, Vector3 } from 'three'
 import { describe, expect, it } from 'vitest'
-import { amangiri } from '../suites/amangiri'
-import { amanpuri } from '../suites/amanpuri'
 import { tokyo } from '../suites/tokyo'
 import { bounds, pieceKinds, runs, type Suite, type V2 } from './plan'
 
-const suites: Suite[] = [tokyo, amangiri, amanpuri]
+const suites: Suite[] = [tokyo]
 
 function crosses(p: V2, q: V2, a: V2, b: V2) {
   const side = (o: V2, s: V2, t: V2) => (s[0] - o[0]) * (t[1] - o[1]) - (s[1] - o[1]) * (t[0] - o[0])

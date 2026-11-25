@@ -25,7 +25,7 @@ const fresh = (): State => ({ frame: 0, colour: 0, flash: 0, arrive: 1, plate: 0
 
 const $ = <T extends Element>(sel: string, root: ParentNode = document) => root.querySelector<T>(sel)!
 
-export function mountTour(suites: Record<string, Suite>) {
+export function mountTour(suite: Suite) {
   const section = $<HTMLElement>('.tour')
   const track = $<HTMLElement>('.tour__track', section)
   const stage = $<HTMLElement>('.stage', section)
@@ -61,7 +61,6 @@ export function mountTour(suites: Record<string, Suite>) {
     planCaption: $('.plan__caption', stage),
   }
 
-  let suite: Suite
   let meta: Meta | undefined
   let frames: Frames | undefined
   let tl: gsap.core.Timeline | undefined
@@ -69,7 +68,6 @@ export function mountTour(suites: Record<string, Suite>) {
   let shownCard = -1
   let dirty = true
   let dot!: SVGGElement
-  let loading = 0
 
   const list = (dl: Element, rows: [string, string][]) => {
     dl.replaceChildren(...rows.flatMap(([k, v]) => {
@@ -192,12 +190,9 @@ export function mountTour(suites: Record<string, Suite>) {
     ScrollTrigger.refresh()
   }
 
-  async function load(id: string) {
-    const ticket = ++loading
-    const base = `${import.meta.env.BASE_URL}frames/${id}/`
+  async function load(suite: Suite) {
+    const base = `${import.meta.env.BASE_URL}frames/${suite.id}/`
     const res = await fetch(`${base}meta.json`)
-    // a second click while the first suite was still loading wins
-    if (ticket !== loading) return
     // the dev server answers a missing file with index.html, so check what came back
     const missing = !res.ok || !res.headers.get('content-type')?.includes('json')
     fallback.hidden = !missing
@@ -210,7 +205,6 @@ export function mountTour(suites: Record<string, Suite>) {
       return
     }
     const m: Meta = await res.json()
-    suite = suites[id]!
     meta = m
     frames?.dispose()
     const size = small ? 'm' : 'd'
@@ -301,14 +295,5 @@ export function mountTour(suites: Record<string, Suite>) {
   resize()
   requestAnimationFrame(paint)
 
-  const tabs = section.querySelectorAll<HTMLButtonElement>('.tour__picker [data-hotel]')
-  for (const tab of tabs) {
-    tab.addEventListener('click', () => {
-      for (const t of tabs) t.setAttribute('aria-selected', String(t === tab))
-      load(tab.dataset.hotel!)
-      scrollTo({ top: track.getBoundingClientRect().top + scrollY, behavior: 'smooth' })
-    })
-  }
-
-  load('tokyo')
+  load(suite)
 }
