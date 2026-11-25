@@ -11,6 +11,9 @@ export class Frames {
   private decoding = new Set<string>()
   private inflight = new Set<string>()
   private queue: string[] = []
+  // the last frame shown of each kind, kept decoded so a jump past the frames
+  // that have arrived leaves the previous picture up instead of a blank canvas
+  private held = new Map<string, string>()
   private fetching = 0
   private gone = false
   onReady: () => void = () => {}
@@ -71,36 +74,60 @@ export class Frames {
           if (this.fetching < 8) this.next()
           continue
         }
-        this.decoding.add(key)
-        createImageBitmap(blob).then(
-          bmp => {
-            this.decoding.delete(key)
-            if (this.gone) return bmp.close()
-            this.bitmaps.set(key, bmp)
-            this.onReady()
-          },
-          () => {
-            this.decoding.delete(key)
-            this.blobs.delete(key)
-          },
-        )
+        this.decode(key, blob)
+      }
+    }
+    // Nothing to show yet, here or before: decode the closest frame that has
+    // arrived, wherever it is, rather than leave the stage empty.
+    if (!this.held.has(kind) && !this.decoding.size) {
+      let best: string | undefined
+      for (const key of this.blobs.keys()) {
+        if (key[0] !== kind) continue
+        if (!best || Math.abs(Number(key.slice(1)) - at) < Math.abs(Number(best.slice(1)) - at)) best = key
+      }
+      if (best && !this.bitmaps.has(best)) {
+        this.decode(best, this.blobs.get(best)!, () => this.held.set(kind, best))
+      } else if (best) {
+        this.held.set(kind, best)
       }
     }
     for (const [key, bmp] of this.bitmaps) {
-      if (key[0] === kind && Math.abs(Number(key.slice(1)) - centre) > KEEP) {
+      if (key[0] === kind && key !== this.held.get(kind) && Math.abs(Number(key.slice(1)) - centre) > KEEP) {
         bmp.close()
         this.bitmaps.delete(key)
       }
     }
   }
 
+  private decode(key: string, blob: Blob, then?: () => void) {
+    this.decoding.add(key)
+    createImageBitmap(blob).then(
+      bmp => {
+        this.decoding.delete(key)
+        if (this.gone) return bmp.close()
+        this.bitmaps.set(key, bmp)
+        then?.()
+        this.onReady()
+      },
+      () => {
+        this.decoding.delete(key)
+        this.blobs.delete(key)
+      },
+    )
+  }
+
   // The decoded frame nearest to `i`, looking outwards.
   nearest(i: number, kind: 'c' | 'k' = 'c') {
     for (let d = 0; d <= KEEP; d++) {
-      const hit = this.bitmaps.get(`${kind}${i - d}`) ?? this.bitmaps.get(`${kind}${i + d}`)
-      if (hit) return hit
+      for (const key of [`${kind}${i - d}`, `${kind}${i + d}`]) {
+        const hit = this.bitmaps.get(key)
+        if (!hit) continue
+        this.held.set(kind, key)
+        return hit
+      }
     }
-    return undefined
+    const last = this.held.get(kind)
+    return last ? this.bitmaps.get(last) : undefined
   }
 
   exact(i: number, kind: 'c' | 'k' = 'c') {
