@@ -113,8 +113,6 @@ def main():
     bpy.context.scene.camera = cam
 
     frames, titled = shots.plan(suite, info, fly)
-    if opt.pass_ == 'clay':
-        frames = [f for f in frames if f['seg'] == 'model']
 
     out = os.path.join(HERE, 'out', opt.suite, opt.pass_)
     os.makedirs(out, exist_ok=True)
@@ -139,6 +137,11 @@ def main():
         wanted = {int(x) for x in opt.frames.split(',')}
     if opt.only:
         wanted = {i for i in wanted if frames[i]['seg'] == opt.only}
+    if opt.pass_ == 'clay':
+        wanted = {i for i in wanted if frames[i]['seg'] == 'model'}
+    # the clay pass builds no city, so it has no flight: number its files as
+    # in the colour sequence, which is how the page lays one over the other
+    first = 0 if fly else shots.FLY
 
     ceiling_top = z0 + suite['height'] - 0.05
     colls = sc.collections
@@ -147,7 +150,7 @@ def main():
     for i, f in enumerate(frames):
         if i not in wanted:
             continue
-        path = os.path.join(out, f'{i:04d}.png')
+        path = os.path.join(out, f'{i + first:04d}.png')
         if os.path.exists(path) and opt.every == 1 and not opt.frames:
             continue
         cam.location = f['pos']
