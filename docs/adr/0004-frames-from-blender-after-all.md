@@ -15,8 +15,9 @@ In the browser the page draws one image per frame on a canvas. Scroll is mapped 
 
 ## What it costs
 
-- **Weight.** Each suite is around six hundred frames. They load progressively (every sixteenth frame first, then the gaps), so the walk is usable within a second or two, but the full set is tens of megabytes per suite. Phones get a smaller set.
-- **Rendering time.** About an hour and a half for all three suites on a laptop RTX 5070 Ti. Changing a sofa means re-rendering the frames that see it. The renderer skips frames already on disk, so a partial re-render is a matter of deleting the right files.
+- **Weight.** The walk is close to five hundred frames. They load progressively (every sixteenth frame first, then the gaps), so it is usable within a second or two, but the full set is tens of megabytes. Phones get a smaller set.
+- **Rendering time.** About an hour and a quarter at 1920×1080 on a laptop RTX 5070 Ti.
+- **One room, not three.** Rendering this way made me cut the three invented suites down to one real one, the Deluxe Suite at Aman Tokyo, modelled from its photographs. That was the right cut anyway. Changing a sofa means re-rendering the frames that see it. The renderer skips frames already on disk, so a partial re-render is a matter of deleting the right files.
 - **No pointer parallax.** The camera only moves where it was filmed.
 
 ## What stays
