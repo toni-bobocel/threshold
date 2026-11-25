@@ -39,14 +39,21 @@ def palette(suite):
                 return M.plaster(role, base, rough=max(rough, 0.8))
             if paint == 'weave':
                 return M.fabric(role, base)
+            if paint == 'washi':
+                return M.washi(role, base)
             return M.plain(role, base, rough=rough, metal=r.get('metal', 0.0))
         defaults = {
             'metal': lambda: M.plain('metal', '#5e5245', rough=0.32, metal=0.95),
             'mullion': lambda: M.plain('mullion', '#2c2722', rough=0.4, metal=0.8),
             'mirror': lambda: M.plain('mirror', '#dfe3e3', rough=0.02, metal=1.0),
-            'glow': lambda: M.glow('glow', '#ffd9a8', 8.0),
+            'glow': lambda: M.glow('glow', '#ffe8cc', 7.0),
             'shade': lambda: M.shade_paper('shade', '#f3e9d8'),
-            'flame': lambda: M.glow('flame', '#ff8a2a', 30.0),
+            'border': lambda: M.fabric('border', '#161616', sheen=0.3),
+            'lacquer': lambda: M.plain('lacquer', '#121111', rough=0.12, coat=1.0),
+            'sweets': lambda: M.plain('sweets', '#9b1f1c', rough=0.5),
+            'pot': lambda: M.speckle('pot', '#6b5f53', rough=0.9),
+            'chrome': lambda: M.plain('chrome', '#d8d8d8', rough=0.08, metal=1.0),
+            'panel': lambda: M.plain('panel', '#2e2f31', rough=0.3, metal=0.4),
             'leaf': lambda: M.leaf('leaf', '#35552f'),
             'blossom': lambda: M.plain('blossom', '#f1d4d0', rough=0.6),
             'bark': lambda: M.speckle('bark', '#6d5d4b', rough=0.9),
@@ -54,12 +61,9 @@ def palette(suite):
             'ceramic': lambda: M.plain('ceramic', '#ebe5db', rough=0.22, coat=0.5),
             'glass': lambda: M.glass(),
             'water': lambda: M.water('water', fin.get('water', {}).get('base', '#5f8f92')),
-            'pooltile': lambda: M.tiles('pooltile', '#9fc9c6', size=0.12, rough=0.2),
-            'coping': lambda: M.tiles('coping', '#e2d8c8', size=0.6, rough=0.6),
             'paper': lambda: M.shade_paper('paper'),
             'art': lambda: ink(fin.get('accent', {}).get('base', '#8a5a3c')),
             'slab': lambda: M.plaster('slab', '#d6d0c6'),
-            'roof_out': lambda: M.speckle('roof_out', '#3b2f27', rough=0.85),
             'ceiling': lambda: M.plaster('ceiling', '#efe9df'),
         }
         if role in defaults:
@@ -130,29 +134,18 @@ def build(sc, suite, z0=0.0):
     cx, cz = (x0 + x1) / 2, (zz0 + zz1) / 2
 
     # in a tower the slab is the building's, flush with the facade
-    margin = 0.0 if suite['view'] == 'city' else 0.6
-    slab = box(sc, (x1 - x0 + margin, zz1 - zz0 + margin, 0.5), plan(cx, cz, z0 - 0.31), 'slab', bevel=0.01)
-    pools = [p for p in suite['pieces'] if p['kind'] == 'pool']
+    box(sc, (x1 - x0, zz1 - zz0, 0.5), plan(cx, cz, z0 - 0.31), 'slab', bevel=0.01)
 
     for room in suite['rooms']:
         rx0, rz0, rx1, rz1 = room['rect']
-        fl = box(sc, (rx1 - rx0, rz1 - rz0, 0.06), plan((rx0 + rx1) / 2, (rz0 + rz1) / 2, z0 - 0.03), room['floor'], bevel=0.0)
-        for p in pools:
-            cut = box(sc, (p['w'], p['d'], 3.0), plan(p['at'][0], p['at'][1], z0 - 1.4), 'slab', bevel=0, coll='cutters')
-            cut.hide_render = cut.hide_viewport = True
-            for target in (fl, slab):
-                m = target.modifiers.new('pool', 'BOOLEAN')
-                m.object = cut
-                m.operation = 'DIFFERENCE'
-                target.modifiers.move(len(target.modifiers) - 1, 0)
-
+        box(sc, (rx1 - rx0, rz1 - rz0, 0.06), plan((rx0 + rx1) / 2, (rz0 + rz1) / 2, z0 - 0.03), room['floor'], bevel=0.0)
         if room.get('ceiling') is False:
             continue
         downlight(sc, room, z0 + suite['height'])
         role = room.get('ceiling') or 'ceiling'
         w, d = rx1 - rx0, rz1 - rz0
-        if room.get('gable'):
-            gable(sc, room, role, z0 + H)
+        if room.get('cove'):
+            cove(sc, room, role, z0 + H)
         else:
             box(sc, (w, d, 0.1), plan((rx0 + rx1) / 2, (rz0 + rz1) / 2, z0 + H + 0.05), role, bevel=0, coll='ceiling')
 
@@ -174,34 +167,27 @@ def downlight(sc, room, ceiling):
     light.shape = 'RECTANGLE'
     light.size, light.size_y = w * 0.6, d * 0.6
     light.energy = 9 * w * d
-    light.color = (1.0, 0.86, 0.7)
+    light.color = (1.0, 0.92, 0.82)
     obj = bpy.data.objects.new('wash', light)
     sc.coll('lights').objects.link(obj)
     obj.location = plan((rx0 + rx1) / 2, (rz0 + rz1) / 2, ceiling - 0.02)
 
 
-def gable(sc, room, role, top):
+def cove(sc, room, role, top):
+    """A lowered band round the room with a strip light on its inner edge,
+    washing the raised middle of the ceiling: how the Aman rooms are lit."""
     rx0, rz0, rx1, rz1 = room['rect']
     w, d = rx1 - rx0, rz1 - rz0
-    rise = 1.6
-    half = d / 2
-    pitch = math.atan2(rise, half)
-    run = math.hypot(rise, half)
+    band = 0.55
+    lift = 0.22
     mx, mz = (rx0 + rx1) / 2, (rz0 + rz1) / 2
-    for s in (-1, 1):
-        # boards above, rafters below: from inside you see the structure, as in a Thai sala
-        b = box(sc, (w + 0.9, run + 0.6, 0.05), plan(mx, mz + s * (half / 2 + 0.15), top + rise / 2 + 0.06), role, bevel=0, coll='ceiling')
-        b.rotation_euler.x = s * pitch
-        x = rx0 + 0.45
-        while x < rx1:
-            r = box(sc, (0.08, run, 0.14), plan(x, mz + s * half / 2, top + rise / 2 - 0.04), 'wood', bevel=0.006, coll='ceiling')
-            r.rotation_euler.x = s * pitch
-            x += 0.9
-        shingles = box(sc, (w + 1.0, run + 0.7, 0.06), plan(mx, mz + s * (half / 2 + 0.18), top + rise / 2 + 0.14), 'roof_out', bevel=0, coll='ceiling')
-        shingles.rotation_euler.x = s * pitch
-    box(sc, (w + 1.0, 0.18, 0.22), plan(mx, mz, top + rise), 'wood', bevel=0.01, coll='ceiling')
-    box(sc, (w, 0.12, 0.14), plan(mx, rz0, top), 'wood', bevel=0.006, coll='ceiling')
-    box(sc, (w, 0.12, 0.14), plan(mx, rz1, top), 'wood', bevel=0.006, coll='ceiling')
+    box(sc, (w, d, 0.06), plan(mx, mz, top + lift + 0.03), role, bevel=0, coll='ceiling')
+    for (sx, sz, ax, az) in ((w, band, mx, rz0 + band / 2), (w, band, mx, rz1 - band / 2),
+                             (band, d - 2 * band, rx0 + band / 2, mz), (band, d - 2 * band, rx1 - band / 2, mz)):
+        box(sc, (sx, sz, 0.08), plan(ax, az, top + 0.04), role, bevel=0, coll='ceiling')
+    for (sx, sz, ax, az) in ((w - 2 * band, 0.03, mx, rz0 + band), (w - 2 * band, 0.03, mx, rz1 - band),
+                             (0.03, d - 2 * band, rx0 + band, mz), (0.03, d - 2 * band, rx1 - band, mz)):
+        box(sc, (sx, sz, 0.015), plan(ax, az, top + 0.09), 'glow', bevel=0, coll='ceiling')
 
 
 def build_wall(sc, wall, z0, H, indoors):
@@ -220,7 +206,7 @@ def build_wall(sc, wall, z0, H, indoors):
 
     if kind in ('glass', 'paper'):
         frame = 'mullion' if kind == 'glass' else 'wood'
-        bay = 1.5 if kind == 'glass' else 0.9
+        bay = 1.5 if kind == 'glass' else 0.95
         for t0, t1, gap in parts:
             if gap:
                 continue
@@ -228,7 +214,8 @@ def build_wall(sc, wall, z0, H, indoors):
             n = max(1, round(span / bay))
             for i in range(n + 1):
                 t = t0 + span * i / n
-                segment(sc, a, b, t - 0.03, t + 0.03, z0, z0 + H, 0.12, frame, bevel=0.003)
+                half = 0.06 if kind == 'glass' else 0.035
+                segment(sc, a, b, t - half, t + half, z0, z0 + H, 0.22 if kind == 'glass' else 0.06, frame, bevel=0.003)
             for i in range(n):
                 p0 = t0 + span * i / n + 0.03
                 p1 = t0 + span * (i + 1) / n - 0.03
@@ -236,12 +223,10 @@ def build_wall(sc, wall, z0, H, indoors):
                     segment(sc, a, b, p0, p1, z0 + 0.04, z0 + H - 0.06, 0.014, 'glass', coll='glass', bevel=0)
                 else:
                     segment(sc, a, b, p0, p1, z0, z0 + H, 0.01, 'paper', bevel=0)
-                    z = 0.45
-                    while z < H:
-                        segment(sc, a, b, p0, p1, z0 + z - 0.012, z0 + z + 0.012, 0.03, 'wood', bevel=0.002)
-                        z += 0.45
-                    mid = (p0 + p1) / 2
-                    segment(sc, a, b, mid - 0.01, mid + 0.01, z0, z0 + H, 0.03, 'wood', bevel=0)
+                    z = 0.34
+                    while z < H - 0.1:
+                        segment(sc, a, b, p0, p1, z0 + z - 0.01, z0 + z + 0.01, 0.035, 'wood', bevel=0.002)
+                        z += 0.34
             if kind == 'glass':
                 portal(sc, a, b, t0, t1, z0, H, indoors)
         segment(sc, a, b, 0, length, z0 + H - 0.08, z0 + H, 0.14, frame)
@@ -253,8 +238,13 @@ def build_wall(sc, wall, z0, H, indoors):
             e0 = -THICK / 2 if t0 == 0 else t0
             e1 = length + THICK / 2 if t1 == length else t1
             segment(sc, a, b, e0, e1, z0, z0 + H, THICK, role)
-            # the shadow gap at the foot of the wall that finished rooms have
-            segment(sc, a, b, e0, e1, z0, z0 + 0.05, THICK + 0.012, 'dark', bevel=0)
+            if role == 'washi':
+                # an oak rail at door height and an oak skirting, as in the photographs
+                segment(sc, a, b, e0, e1, z0 + 2.38, z0 + 2.5, THICK + 0.03, 'oak', bevel=0.003)
+                segment(sc, a, b, e0, e1, z0, z0 + 0.07, THICK + 0.024, 'oak', bevel=0.003)
+            else:
+                # the shadow gap at the foot of the wall that finished rooms have
+                segment(sc, a, b, e0, e1, z0, z0 + 0.05, THICK + 0.012, 'dark', bevel=0)
             continue
         top = gap.get('top', 2.4)
         sill = gap.get('sill', 0)

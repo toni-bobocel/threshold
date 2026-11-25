@@ -36,7 +36,7 @@ def options():
     p.add_argument('--only')
     p.add_argument('--frames')
     p.add_argument('--scale', type=int, default=100)
-    p.add_argument('--samples', type=int, default=96)
+    p.add_argument('--samples', type=int, default=72)
     return p.parse_args(argv)
 
 
@@ -70,8 +70,8 @@ def settings(opt):
     c.blur_glossy = 0.8
     c.sample_clamp_indirect = 6.0
     scene.render.use_persistent_data = True
-    scene.render.resolution_x = 1440
-    scene.render.resolution_y = 810
+    scene.render.resolution_x = 1920
+    scene.render.resolution_y = 1080
     scene.render.resolution_percentage = opt.scale
     scene.render.image_settings.file_format = 'PNG'
     scene.render.image_settings.color_mode = 'RGBA'
@@ -85,14 +85,6 @@ def settings(opt):
     scene.view_settings.exposure = 0.55
 
 
-def floor_height(suite):
-    if suite['view'] == 'city':
-        return (suite['gauge']['to'] - 1) * outside.FLOOR
-    if suite['view'] == 'sea':
-        return outside.PLATEAU
-    return 0.0
-
-
 def main():
     opt = options()
     bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -100,10 +92,8 @@ def main():
         suite = json.load(f)[opt.suite]
 
     sc = kit.Scene(S.palette(suite))
-    z0 = floor_height(suite)
-    fly = None
-    if opt.pass_ == 'colour':
-        fly = outside.BUILDERS[suite['view']](sc, suite)
+    z0 = (suite['gauge']['to'] - 1) * outside.FLOOR
+    fly = outside.build(sc, suite) if opt.pass_ == 'colour' else None
     info = S.build(sc, suite, z0)
     outside.sun_and_sky(suite)
     settings(opt)

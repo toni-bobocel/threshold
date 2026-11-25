@@ -124,380 +124,255 @@ def point(sc, at, energy=40.0, color=(1.0, 0.8, 0.6), radius=0.08, parent=None):
     return obj
 
 
-_leaf_mesh = None
-
-
-def leaf_mesh():
-    """One curved leaf, shared by every plant through linked data."""
-    global _leaf_mesh
-    if _leaf_mesh:
-        return _leaf_mesh
-    bm = bmesh.new()
-    rows = 8
-    prev = None
-    for i in range(rows + 1):
-        t = i / rows
-        half = math.sin(t * math.pi) * 0.055 * (1.1 - t * 0.4)
-        y = t * 0.55
-        z = math.sin(t * 1.3) * 0.09 - t * t * 0.12
-        row = [bm.verts.new((-half, y, z + abs(half) * 0.4)), bm.verts.new((0, y, z)), bm.verts.new((half, y, z + abs(half) * 0.4))]
-        if prev:
-            bm.faces.new((prev[0], prev[1], row[1], row[0]))
-            bm.faces.new((prev[1], prev[2], row[2], row[1]))
-        prev = row
-    me = bpy.data.meshes.new('leaf')
-    bm.to_mesh(me)
-    bm.free()
-    for p in me.polygons:
-        p.use_smooth = True
-    _leaf_mesh = me
-    return me
-
-
 # -- furniture ---------------------------------------------------------------
-# Every piece is built around a local origin on the floor. Local -y is the
-# front (where you sit or stand), +y is the back.
+# Modelled from the Deluxe Suite photographs. Every piece is built around a
+# local origin on the floor; local -y is the front, +y the back.
 
-def sofa(sc, p, g):
-    w = p.get('w', 2.4)
-    d = p.get('d', 0.95)
-    box(sc, (w - 0.1, d - 0.12, 0.1), (0, 0, 0.05), 'dark', parent=g)
-    soft(sc, (w, d, 0.24), (0, 0, 0.22), 'fabric', give=0.04, parent=g)
-    for s in (-1, 1):
-        soft(sc, (0.2, d, 0.36), (s * (w / 2 - 0.1), 0, 0.42), 'fabric', give=0.06, parent=g)
-    seats = max(1, round((w - 0.4) / 0.9))
-    sw = (w - 0.4) / seats
-    for i in range(seats):
-        x = -w / 2 + 0.2 + sw * (i + 0.5)
-        soft(sc, (sw - 0.02, d - 0.28, 0.16), (x, -0.1, 0.42), 'fabric', give=0.07, parent=g)
-        back = soft(sc, (sw - 0.02, 0.22, 0.46), (x, d / 2 - 0.16, 0.62), 'fabric', give=0.08, parent=g)
-        back.rotation_euler.x = math.radians(-10)
-    pillow = soft(sc, (0.46, 0.14, 0.42), (-w / 2 + 0.55, d / 2 - 0.34, 0.68), 'linen', give=0.09, parent=g)
-    pillow.rotation_euler = (math.radians(-14), 0, math.radians(8))
-
-
-def armchair(sc, p, g):
-    w = p.get('w', 0.85)
-    box(sc, (w, 0.82, 0.05), (0, 0, 0.18), 'wood', parent=g)
-    for s in (-1, 1):
-        box(sc, (0.05, 0.8, 0.56), (s * (w / 2 - 0.025), 0, 0.28), 'wood', bevel=0.012, parent=g)
-    soft(sc, (w - 0.12, 0.7, 0.14), (0, -0.04, 0.28), 'fabric', give=0.06, parent=g)
-    back = soft(sc, (w - 0.12, 0.14, 0.5), (0, 0.32, 0.6), 'fabric', give=0.06, parent=g)
-    back.rotation_euler.x = math.radians(-12)
-
-
-def lowTable(sc, p, g):
-    w = p.get('w', 1.3)
-    d = p.get('d', 0.8)
-    box(sc, (w, d, 0.05), (0, 0, 0.36), 'stone', bevel=0.008, parent=g)
-    box(sc, (w * 0.62, d * 0.55, 0.33), (0, 0, 0.165), 'dark', bevel=0.004, parent=g)
-    cyl(sc, 0.14, 0.06, (w * 0.22, 0.05, 0.415), 'ceramic', r2=0.09, parent=g)
-    for i, t in enumerate((0.03, 0.025, 0.02)):
-        box(sc, (0.3 - i * 0.03, 0.22 - i * 0.02, t), (-w * 0.2, -0.05, 0.385 + sum((0.03, 0.025, 0.02)[:i]) + t / 2), 'linen' if i % 2 else 'dark', bevel=0.002, parent=g)
-
-
-def sideTable(sc, p, g):
-    cyl(sc, 0.26, 0.035, (0, 0, 0.53), 'stone', parent=g)
-    cyl(sc, 0.04, 0.5, (0, 0, 0.26), 'metal', parent=g)
-    cyl(sc, 0.17, 0.02, (0, 0, 0.01), 'metal', parent=g)
-
-
-def chair(sc, g, at=(0, 0, 0), rot=0.0):
-    c = bpy.data.objects.new('chair', None)
-    sc.coll('suite').objects.link(c)
-    c.parent = g
-    c.location = at
-    c.rotation_euler.z = rot
-    soft(sc, (0.48, 0.46, 0.06), (0, -0.01, 0.47), 'fabric', give=0.025, parent=c)
-    back = box(sc, (0.46, 0.035, 0.42), (0, 0.21, 0.73), 'wood', bevel=0.01, parent=c)
-    back.rotation_euler.x = math.radians(-8)
-    for x, y in ((-0.2, -0.19), (0.2, -0.19), (-0.2, 0.19), (0.2, 0.19)):
-        box(sc, (0.035, 0.035, 0.45), (x, y, 0.225), 'wood', bevel=0.006, parent=c)
-    return c
-
-
-def dining(sc, p, g):
-    w = p.get('w', 2.6)
-    d = p.get('d', 1.0)
-    box(sc, (w, d, 0.05), (0, 0, 0.745), 'wood', bevel=0.012, parent=g)
-    for s in (-1, 1):
-        box(sc, (0.07, d * 0.72, 0.72), (s * (w / 2 - 0.3), 0, 0.36), 'wood', bevel=0.008, parent=g)
-    n = max(2, int(w // 0.75))
-    for i in range(n):
-        x = -w / 2 + (w / n) * (i + 0.5)
-        chair(sc, g, (x, -(d / 2 + 0.2), 0), math.pi)
-        chair(sc, g, (x, d / 2 + 0.2, 0), 0.0)
-    vase = cyl(sc, 0.09, 0.28, (0.2, 0, 0.91), 'ceramic', r2=0.06, parent=g)
-    vase.name = 'vase'
-    for i in range(6):
-        stem = cyl(sc, 0.004, 0.62, (0.2 + math.sin(i * 2.4) * 0.05, math.cos(i * 2.4) * 0.05, 1.28), 'dark', verts=6, bevel=0, parent=g)
-        stem.rotation_euler = (math.sin(i * 1.7) * 0.35, math.cos(i * 2.1) * 0.3, 0)
-
-
-def bed(sc, p, g):
-    w = p.get('w', 2.0)
-    l = p.get('d', 2.15)
-    box(sc, (w + 0.12, l, 0.24), (0, 0, 0.16), 'dark', bevel=0.01, parent=g)
-    soft(sc, (w - 0.02, l - 0.08, 0.24), (0, -0.02, 0.4), 'linen', give=0.06, parent=g)
-    soft(sc, (w + 0.06, l * 0.62, 0.07), (0, -l * 0.17, 0.545), 'linen', give=0.03, parent=g)
-    soft(sc, (w + 0.1, l * 0.3, 0.06), (0, -l * 0.3, 0.57), 'fabric', give=0.03, parent=g)
-    soft(sc, (w + 0.1, 0.05, 0.3), (0, -l / 2 - 0.02, 0.43), 'fabric', give=0.02, parent=g)
-    for s in (-1, 1):
-        pl = soft(sc, (w * 0.42, 0.34, 0.16), (s * w * 0.23, l / 2 - 0.3, 0.64), 'linen', give=0.07, parent=g)
-        pl.rotation_euler.x = math.radians(-28)
-        pl = soft(sc, (w * 0.38, 0.28, 0.13), (s * w * 0.21, l / 2 - 0.52, 0.62), 'linen', give=0.06, parent=g)
-        pl.rotation_euler.x = math.radians(-14)
-    panels = 5
-    pw = (w + 0.9) / panels
-    for i in range(panels):
-        soft(sc, (pw - 0.012, 0.07, 1.1), (-(w + 0.9) / 2 + pw * (i + 0.5), l / 2 + 0.04, 0.6), 'fabric', give=0.025, parent=g)
-    for s in (-1, 1):
-        x = s * (w / 2 + 0.42)
-        box(sc, (0.5, 0.42, 0.44), (x, l / 2 - 0.25, 0.22), 'wood', bevel=0.008, parent=g)
-        lamp(sc, g, (x, l / 2 - 0.25, 0.44), lit=p.get('light') and s > 0)
-
-
-def lamp(sc, g, at, lit=False):
+def lamp(sc, g, at, lit=False, legs=0.32):
+    """Black metal frame, a box of linen on top: the lamps by the beds and the daybed."""
     x, y, z = at
-    cyl(sc, 0.07, 0.3, (x, y, z + 0.15), 'ceramic', r2=0.09, parent=g)
-    shade = cyl(sc, 0.16, 0.24, (x, y, z + 0.42), 'shade', r2=0.18, parent=g)
-    shade.name = 'shade'
-    point(sc, (x, y, z + 0.42), energy=25 if lit else 12, parent=g)
-
-
-def desk(sc, p, g):
-    w = p.get('w', 1.4)
-    box(sc, (w, 0.6, 0.035), (0, 0, 0.745), 'wood', bevel=0.008, parent=g)
-    for s in (-1, 1):
-        box(sc, (0.035, 0.56, 0.73), (s * (w / 2 - 0.035), 0, 0.365), 'wood', bevel=0.006, parent=g)
-    chair(sc, g, (0.1, -0.55, 0), math.radians(190))
-    lamp(sc, g, (-w / 2 + 0.2, 0.12, 0.76), lit=p.get('light'))
-    box(sc, (0.3, 0.22, 0.02), (0.15, 0.02, 0.775), 'linen', bevel=0.002, parent=g)
-
-
-def tub(sc, p, g):
-    w = p.get('w', 1.7)
-    d = p.get('d', 0.85)
-    deep = p.get('variant') == 'ofuro'
-    h = 0.68 if deep else 0.56
-    shell = 'basalt' if deep else 'ceramic'
-    outer = box(sc, (w, d, h), (0, 0, h / 2), shell, bevel=0.03 if deep else 0.12, segments=5, parent=g)
-    cutter = box(sc, (w - 0.14, d - 0.14, h), (0, 0, h / 2 + 0.1), shell, bevel=0, parent=g)
-    cut = outer.modifiers.new('hollow', 'BOOLEAN')
-    cut.object = cutter
-    cut.operation = 'DIFFERENCE'
-    outer.modifiers.move(len(outer.modifiers) - 1, 0)
-    cutter.hide_render = True
-    cutter.hide_viewport = True
-    water = box(sc, (w - 0.15, d - 0.15, 0.01), (0, 0, h - 0.1), 'water', bevel=0, parent=g)
-    water.name = 'water'
-    cyl(sc, 0.014, 0.95, (w / 2 + 0.2, 0, 0.475), 'metal', parent=g)
-    spout = box(sc, (0.25, 0.025, 0.025), (w / 2 + 0.09, 0, 0.94), 'metal', bevel=0.005, parent=g)
-    spout.name = 'spout'
-    soft(sc, (0.5, 0.32, 0.04), (-w / 2 - 0.35, -0.2, 0.02), 'linen', give=0.015, parent=g)
-
-
-def vanity(sc, p, g):
-    w = p.get('w', 2.0)
-    box(sc, (w, 0.52, 0.42), (0, 0, 0.66), 'wood', bevel=0.006, parent=g)
-    box(sc, (w + 0.04, 0.55, 0.04), (0, -0.01, 0.89), 'stone', bevel=0.004, parent=g)
-    for s in ((-1, 1) if w > 1.3 else (0,)):
-        cyl(sc, 0.21, 0.13, (s * w * 0.25, -0.03, 0.975), 'ceramic', r2=0.16, bevel=0.01, parent=g)
-        cyl(sc, 0.17, 0.005, (s * w * 0.25, -0.03, 1.04), 'water', bevel=0, parent=g)
-        tap = cyl(sc, 0.012, 0.28, (s * w * 0.25, 0.2, 1.03), 'metal', parent=g)
-        tap.name = 'tap'
-    box(sc, (w - 0.1, 0.02, 0.95), (0, 0.27, 1.62), 'mirror', bevel=0.002, parent=g)
-    box(sc, (w - 0.1, 0.03, 0.02), (0, 0.255, 1.13), 'glow', bevel=0, parent=g)
-
-
-def plant(sc, p, g):
-    h = p.get('h', 1.4)
-    cyl(sc, 0.21, 0.44, (0, 0, 0.22), 'ceramic', r2=0.16, bevel=0.01, parent=g)
-    cyl(sc, 0.19, 0.01, (0, 0, 0.43), 'soil', bevel=0, parent=g)
-    cyl(sc, 0.012, h * 0.75, (0, 0, 0.42 + h * 0.37), 'bark', verts=8, bevel=0, parent=g)
-    me = leaf_mesh()
-    n = 34
-    for i in range(n):
-        a = i * 2.39996
-        t = i / n
-        leaf = bpy.data.objects.new('leaf', me)
-        sc.coll('suite').objects.link(leaf)
-        leaf.parent = g
-        if not me.materials:
-            me.materials.append(sc.mat('leaf'))
-        leaf.location = (math.cos(a) * 0.03, math.sin(a) * 0.03, 0.42 + t * (h - 0.5))
-        leaf.rotation_euler = (math.radians(20 + (1 - t) * 50), 0, a)
-        leaf.scale = [0.8 + t * 1.1] * 3
-
-
-def ikebana(sc, p, g):
-    cyl(sc, 0.11, 0.26, (0, 0, 0.13), 'basalt', r2=0.13, parent=g)
-    for i in range(5):
-        b = cyl(sc, 0.005, 0.8 - i * 0.1, (math.sin(i) * 0.08, 0, 0.6), 'bark', verts=6, bevel=0, parent=g)
-        b.rotation_euler = (0.2 * math.cos(i * 1.3), 0.25 + i * 0.18, i * 1.3)
-    for i in range(14):
-        bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=2, radius=0.025)
-        bloom = bpy.context.active_object
-        link(bloom, sc.coll('suite'))
-        bloom.data.materials.append(sc.mat('blossom'))
-        bloom.parent = g
-        bloom.location = (0.1 + math.sin(i * 1.9) * 0.2, math.sin(i * 2.7) * 0.14, 0.72 + math.cos(i * 1.3) * 0.18)
-
-
-def art(sc, p, g):
-    w = p.get('w', 1.2)
-    h = p.get('h', 1.5)
-    box(sc, (w + 0.06, 0.035, h + 0.06), (0, 0.0, 0), 'dark', bevel=0.004, parent=g)
-    box(sc, (w, 0.01, h), (0, -0.02, 0), 'art', bevel=0, parent=g)
-
-
-def rug(sc, p, g):
-    soft(sc, (p.get('w', 2.6), p.get('d', 1.8), 0.018), (0, 0, 0.009), 'rug', give=0.006, parent=g)
-
-
-def wardrobe(sc, p, g):
-    w = p.get('w', 2.0)
-    box(sc, (w, 0.6, 2.4), (0, 0, 1.2), 'wood', bevel=0.004, parent=g)
-
-
-def bench(sc, p, g):
-    w = p.get('w', 1.6)
-    box(sc, (w, 0.4, 0.05), (0, 0, 0.445), 'wood', bevel=0.008, parent=g)
-    box(sc, (w * 0.85, 0.3, 0.42), (0, 0, 0.21), 'stone', bevel=0.006, parent=g)
-
-
-def pendant(sc, p, g):
-    y = p.get('h', 2.1)
-    cyl(sc, 0.003, 3 - y, (0, 0, (3 + y) / 2), 'dark', verts=6, bevel=0, parent=g)
-    cyl(sc, 0.26, 0.07, (0, 0, y), 'shade', r2=0.2, parent=g)
-    point(sc, (0, 0, y - 0.06), energy=60 if p.get('light') else 25, radius=0.15, parent=g)
-
-
-def daybed(sc, p, g):
-    w = p.get('w', 2.2)
-    box(sc, (w, 1.2, 0.32), (0, 0, 0.16), 'stone', bevel=0.02, parent=g)
-    soft(sc, (w - 0.08, 1.12, 0.14), (0, 0, 0.39), 'linen', give=0.06, parent=g)
-    for s in (-0.3, 0.3):
-        c = soft(sc, (0.5, 0.15, 0.32), (s * w, 0.45, 0.6), 'fabric', give=0.07, parent=g)
-        c.rotation_euler.x = math.radians(-15)
-
-
-def lounger(sc, p, g):
-    box(sc, (0.7, 1.95, 0.16), (0, 0, 0.18), 'wood', bevel=0.01, parent=g)
-    soft(sc, (0.66, 1.3, 0.08), (0, -0.28, 0.31), 'linen', give=0.03, parent=g)
-    back = soft(sc, (0.66, 0.65, 0.08), (0, 0.62, 0.5), 'linen', give=0.03, parent=g)
-    back.rotation_euler.x = math.radians(40)
-
-
-def firepit(sc, p, g):
-    cyl(sc, 0.7, 0.36, (0, 0, 0.18), 'stone', r2=0.66, verts=64, bevel=0.02, parent=g)
-    cyl(sc, 0.52, 0.02, (0, 0, 0.37), 'basalt', bevel=0, parent=g)
-    for i in range(9):
-        f = cyl(sc, 0.06, 0.32 + (i % 3) * 0.1, (math.cos(i) * 0.2, math.sin(i * 1.7) * 0.2, 0.55), 'flame', r2=0.0, verts=8, bevel=0, parent=g)
-        f.name = 'flame'
-    point(sc, (0, 0, 0.8), energy=220, color=(1.0, 0.55, 0.25), radius=0.3, parent=g)
-
-
-def pool(sc, p, g):
-    # The basin itself is cut out of the deck by the suite builder; this is the water and the coping.
-    w = p.get('w', 6.0)
-    d = p.get('d', 3.0)
-    box(sc, (w, d, 0.01), (0, 0, -0.08), 'water', bevel=0, parent=g).name = 'water'
-    box(sc, (w, d, 0.02), (0, 0, -1.3), 'pooltile', bevel=0, parent=g)
-    for (sx, sy, ax, ay) in ((w, 0.06, 0, d / 2), (w, 0.06, 0, -d / 2), (0.06, d, w / 2, 0), (0.06, d, -w / 2, 0)):
-        box(sc, (sx, sy, 1.3), (ax, ay, -0.65), 'pooltile', bevel=0, parent=g)
-    lip = 0.3
-    for (sx, sy, ax, ay) in ((w + 2 * lip, lip, 0, d / 2 + lip / 2), (w + 2 * lip, lip, 0, -d / 2 - lip / 2),
-                             (lip, d, w / 2 + lip / 2, 0), (lip, d, -w / 2 - lip / 2, 0)):
-        box(sc, (sx, sy, 0.04), (ax, ay, 0.02), 'coping', bevel=0.006, parent=g)
-
-
-def rock(sc, p, g):
-    s = p.get('w', 1.5)
-    bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=4, radius=s)
-    r = bpy.context.active_object
-    link(r, sc.coll('suite'))
-    r.parent = g
-    r.scale = (1.0, 0.85, 0.62)
-    r.location = (0, 0, s * 0.3)
-    tex = bpy.data.textures.new('rock', 'VORONOI')
-    tex.noise_scale = 0.6
-    dsp = r.modifiers.new('rough', 'DISPLACE')
-    dsp.texture = tex
-    dsp.strength = 0.25
-    r.data.materials.append(sc.mat('sandstone'))
-    for f in r.data.polygons:
-        f.use_smooth = True
-
-
-def palm(sc, p, g, coll='suite'):
-    h = p.get('h', 6.0)
-    curve = bpy.data.curves.new('trunk', 'CURVE')
-    curve.dimensions = '3D'
-    curve.bevel_depth = 0.14
-    curve.bevel_resolution = 4
-    spline = curve.splines.new('BEZIER')
-    spline.bezier_points.add(2)
-    pts = [(0, 0, 0), (0.25, 0, h * 0.5), (0.9, 0.2, h)]
-    for bp, co in zip(spline.bezier_points, pts):
-        bp.co = co
-        bp.handle_left_type = bp.handle_right_type = 'AUTO'
-    spline.bezier_points[0].radius = 1.3
-    spline.bezier_points[2].radius = 0.8
-    trunk = bpy.data.objects.new('trunk', curve)
-    sc.coll(coll).objects.link(trunk)
-    trunk.parent = g
-    curve.materials.append(sc.mat('bark'))
-    me = leaf_mesh()
-    if not me.materials:
-        me.materials.append(sc.mat('leaf'))
-    for i in range(12):
-        frond = bpy.data.objects.new('frond', None)
-        sc.coll(coll).objects.link(frond)
-        frond.parent = g
-        frond.location = (0.9, 0.2, h)
-        frond.rotation_euler = (0, math.radians(40 + (i % 3) * 18), i / 12 * math.tau)
-        for k in range(16):
-            for side in (-1, 1):
-                lf = bpy.data.objects.new('frondleaf', me)
-                sc.coll(coll).objects.link(lf)
-                lf.parent = frond
-                lf.location = (k * 0.15, 0, -0.012 * k * k)
-                lf.rotation_euler = (0, 0, side * math.radians(70) - math.pi / 2)
-                lf.scale = (0.7, 1.4 * (1 - k / 22), 0.7)
-
-
-def bowl(sc, p, g):
-    cyl(sc, 0.16, 0.08, (0, 0, 0.04), 'ceramic', r2=0.09, bevel=0.01, parent=g)
-
-
-def shelf(sc, p, g):
-    w = p.get('w', 1.6)
-    for z in (0.4, 0.9, 1.4, 1.9):
-        box(sc, (w, 0.38, 0.035), (0, 0, z), 'wood', bevel=0.004, parent=g)
-    for s in (-1, 1):
-        box(sc, (0.035, 0.38, 2.0), (s * w / 2, 0, 1.0), 'wood', bevel=0.004, parent=g)
-    for i in range(7):
-        box(sc, (0.04 + (i % 3) * 0.015, 0.22, 0.24 + (i % 2) * 0.03), (-w / 2 + 0.2 + i * 0.065, 0, 0.55), 'linen' if i % 2 else 'dark', bevel=0.003, parent=g)
-    cyl(sc, 0.1, 0.24, (w * 0.25, 0, 1.04), 'ceramic', r2=0.07, parent=g)
-    cyl(sc, 0.13, 0.12, (-w * 0.2, 0, 1.48), 'basalt', r2=0.13, parent=g)
+    for dx in (-0.06, 0.06):
+        for dy in (-0.06, 0.06):
+            box(sc, (0.012, 0.012, legs), (x + dx, y + dy, z + legs / 2), 'dark', bevel=0.002, parent=g)
+    box(sc, (0.14, 0.14, 0.012), (x, y, z + legs), 'dark', bevel=0.002, parent=g)
+    box(sc, (0.38, 0.26, 0.24), (x, y, z + legs + 0.13), 'shade', bevel=0.004, parent=g)
+    point(sc, (x, y, z + legs + 0.12), energy=30 if lit else 16, radius=0.1, parent=g)
 
 
 def door(sc, p, g):
     w = p.get('w', 1.0)
-    box(sc, (w, 0.05, 2.38), (0, 0, 1.19), 'wood', bevel=0.004, parent=g)
-    box(sc, (0.02, 0.03, 0.3), (w / 2 - 0.12, -0.05, 1.05), 'metal', bevel=0.004, parent=g)
+    box(sc, (w, 0.05, 2.38), (0, 0, 1.19), 'oak', bevel=0.003, parent=g)
+    box(sc, (w + 0.12, 0.07, 0.06), (0, 0, 2.41), 'oak', bevel=0.003, parent=g)
+    box(sc, (0.02, 0.03, 0.22), (w / 2 - 0.1, -0.04, 1.05), 'dark', bevel=0.003, parent=g)
 
 
-def post(sc, p, g):
-    h = p.get('h', 2.9)
-    box(sc, (0.2, 0.2, h), (0, 0, h / 2), 'wood', bevel=0.01, parent=g)
-    box(sc, (0.34, 0.34, 0.12), (0, 0, 0.06), 'stone', bevel=0.01, parent=g)
+def wardrobe(sc, p, g):
+    w = p.get('w', 2.4)
+    doors = max(2, round(w / 0.6))
+    dw = w / doors
+    box(sc, (w, 0.58, 0.06), (0, 0, 0.03), 'dark', bevel=0, parent=g)
+    for i in range(doors):
+        x = -w / 2 + dw * (i + 0.5)
+        box(sc, (dw - 0.006, 0.04, 2.6), (x, -0.27, 1.36), 'oak', bevel=0.002, parent=g)
+        # a finger slot instead of a handle, as in the photographs
+        box(sc, (0.012, 0.01, 0.3), (x + (dw / 2 - 0.04) * (1 if i % 2 else -1), -0.295, 1.1), 'dark', bevel=0, parent=g)
+    box(sc, (w, 0.56, 2.66), (0, 0.02, 1.36), 'oak', bevel=0, parent=g)
 
 
-KINDS = {f.__name__: f for f in (sofa, armchair, lowTable, sideTable, dining, bed, desk, tub, vanity, plant, ikebana,
-                                 art, rug, wardrobe, bench, pendant, daybed, lounger, firepit, pool, rock, palm, bowl,
-                                 shelf, door, post)}
+def windowBench(sc, p, g):
+    w = p.get('w', 4.4)
+    box(sc, (w, 0.84, 0.3), (0, 0, 0.15), 'granite', bevel=0.008, parent=g)
+    soft(sc, (w - 0.04, 0.7, 0.13), (0, -0.04, 0.37), 'fabric', give=0.05, parent=g)
+    for i, x in enumerate((-w / 2 + 0.55, -w / 2 + 1.3, w / 2 - 1.3, w / 2 - 0.55)):
+        c = soft(sc, (0.62, 0.17, 0.48), (x, 0.24, 0.66), 'fabric', give=0.08, parent=g)
+        c.rotation_euler = (math.radians(-16), 0, math.radians(3 * (i - 1.5)))
+    for x in (-w / 2 + 0.85, w / 2 - 0.95):
+        c = soft(sc, (0.42, 0.14, 0.4), (x, 0.08, 0.6), 'throw', give=0.08, parent=g)
+        c.rotation_euler = (math.radians(-22), 0, math.radians(12))
+
+
+def roundTable(sc, p, g):
+    cyl(sc, 0.43, 0.035, (0, 0, 0.6), 'oak', verts=96, bevel=0.01, parent=g)
+    for a in range(4):
+        ang = a * math.pi / 2 + math.pi / 4
+        leg = box(sc, (0.035, 0.035, 0.59), (math.cos(ang) * 0.24, math.sin(ang) * 0.24, 0.295), 'oak', bevel=0.004, parent=g)
+        leg.rotation_euler.z = ang
+    box(sc, (0.3, 0.12, 0.02), (0.02, 0, 0.628), 'dark', bevel=0.004, parent=g)
+    for k in range(4):
+        cyl(sc, 0.022, 0.025, (-0.09 + k * 0.06, 0, 0.65), 'sweets', verts=16, bevel=0.002, parent=g)
+
+
+def loungeChair(sc, p, g):
+    w = 0.66
+    for s in (-1, 1):
+        rail = box(sc, (0.035, 0.74, 0.04), (s * (w / 2 - 0.02), 0, 0.32), 'oak', bevel=0.006, parent=g)
+        rail.rotation_euler.x = math.radians(4)
+        box(sc, (0.035, 0.035, 0.32), (s * (w / 2 - 0.02), -0.32, 0.16), 'oak', bevel=0.005, parent=g)
+        back = box(sc, (0.035, 0.035, 0.78), (s * (w / 2 - 0.02), 0.3, 0.38), 'oak', bevel=0.005, parent=g)
+        back.rotation_euler.x = math.radians(-14)
+    for k in range(8):
+        slat = box(sc, (0.035, 0.016, 0.5), (-w / 2 + 0.09 + k * 0.069, 0.36, 0.55), 'oak', bevel=0.003, parent=g)
+        slat.rotation_euler.x = math.radians(-14)
+    soft(sc, (w - 0.08, 0.64, 0.1), (0, -0.02, 0.39), 'fabric', give=0.04, parent=g)
+    back = soft(sc, (w - 0.1, 0.1, 0.44), (0, 0.27, 0.66), 'fabric', give=0.04, parent=g)
+    back.rotation_euler.x = math.radians(-14)
+    pillow = soft(sc, (0.4, 0.12, 0.36), (0.04, 0.16, 0.6), 'throw', give=0.07, parent=g)
+    pillow.rotation_euler = (math.radians(-18), 0, math.radians(-8))
+
+
+def floorLamp(sc, p, g):
+    box(sc, (0.3, 0.3, 0.02), (0, 0, 0.01), 'dark', bevel=0.003, parent=g)
+    lamp(sc, g, (0, 0, 0.02), lit=p.get('light'), legs=1.12)
+
+
+def slats(sc, p, g):
+    w = p.get('w', 1.6)
+    h = p.get('h', 2.6)
+    box(sc, (w, 0.02, h), (0, 0.03, h / 2), 'oak', bevel=0, parent=g)
+    n = int(w / 0.08)
+    for k in range(n):
+        box(sc, (0.04, 0.05, h), (-w / 2 + 0.04 + k * (w / n), -0.01, h / 2), 'oak', bevel=0.004, parent=g)
+
+
+def footTable(sc, p, g):
+    w = p.get('w', 2.4)
+    box(sc, (w, 0.62, 0.05), (0, 0, 0.44), 'oak', bevel=0.006, parent=g)
+    box(sc, (w - 0.1, 0.56, 0.035), (0, 0, 0.12), 'oak', bevel=0.004, parent=g)
+    for s in (-1, 1):
+        box(sc, (0.05, 0.6, 0.42), (s * (w / 2 - 0.05), 0, 0.21), 'oak', bevel=0.005, parent=g)
+    box(sc, (w - 0.3, 0.5, 0.06), (0, 0, 0.03), 'dark', bevel=0, parent=g)
+    # the lacquer tray and the tea things in the photographs
+    box(sc, (0.62, 0.38, 0.025), (0.25, 0, 0.478), 'lacquer', bevel=0.006, parent=g)
+    cyl(sc, 0.06, 0.15, (0.05, 0.02, 0.565), 'dark', verts=32, bevel=0.006, parent=g)
+    for k in range(2):
+        cyl(sc, 0.035, 0.05, (0.3 + k * 0.1, 0.06, 0.515), 'ceramic', r2=0.03, verts=24, bevel=0.003, parent=g)
+
+
+def tatami(sc, p, g):
+    w = p.get('w', 2.0)
+    d = p.get('d', 1.0)
+    box(sc, (w - 0.12, d - 0.12, 0.022), (0, 0, 0.011), 'tatami', bevel=0.002, parent=g)
+    for (sx, sy, ax, ay) in ((w, 0.06, 0, d / 2 - 0.03), (w, 0.06, 0, -d / 2 + 0.03), (0.06, d - 0.12, w / 2 - 0.03, 0), (0.06, d - 0.12, -w / 2 + 0.03, 0)):
+        box(sc, (sx, sy, 0.024), (ax, ay, 0.012), 'border', bevel=0.003, parent=g)
+
+
+def twinBeds(sc, p, g):
+    l = 2.15
+    box(sc, (2.3, l + 0.1, 0.12), (0, 0, 0.2), 'oak', bevel=0.008, parent=g)
+    box(sc, (2.0, l - 0.2, 0.14), (0, 0, 0.07), 'dark', bevel=0, parent=g)
+    for s in (-1, 1):
+        x = s * 0.53
+        soft(sc, (1.03, l - 0.05, 0.22), (x, 0, 0.37), 'linen', give=0.06, parent=g)
+        soft(sc, (1.08, l * 0.8, 0.05), (x, -l * 0.08, 0.5), 'linen', give=0.025, parent=g)
+        soft(sc, (1.1, 0.05, 0.25), (x, -l / 2, 0.4), 'linen', give=0.02, parent=g)
+        for k, (z, tilt) in enumerate(((0.62, -24), (0.6, -12))):
+            pl = soft(sc, (0.86 - k * 0.05, 0.22, 0.5 - k * 0.06), (x, l / 2 - 0.2 - k * 0.2, z), 'linen', give=0.09, parent=g)
+            pl.rotation_euler.x = math.radians(tilt)
+        c = soft(sc, (0.38, 0.12, 0.3), (x + 0.05, l / 2 - 0.55, 0.6), 'throw', give=0.06, parent=g)
+        c.rotation_euler = (math.radians(-20), 0, math.radians(-10 * s))
+        # the charcoal runner across the foot, finished with a black edge
+        soft(sc, (1.12, 0.62, 0.03), (x, -l / 2 + 0.42, 0.535), 'throw', give=0.012, parent=g)
+        soft(sc, (1.12, 0.06, 0.032), (x, -l / 2 + 0.1, 0.535), 'border', give=0.01, parent=g)
+        soft(sc, (1.12, 0.03, 0.2), (x, -l / 2 - 0.05, 0.44), 'throw', give=0.01, parent=g)
+
+
+def headboard(sc, p, g):
+    w = p.get('w', 3.2)
+    box(sc, (w, 0.45, 0.06), (0, 0, 0.98), 'oak', bevel=0.006, parent=g)
+    box(sc, (w, 0.06, 0.95), (0, -0.19, 0.48), 'oak', bevel=0.004, parent=g)
+    box(sc, (w - 0.04, 0.4, 0.92), (0, 0.02, 0.46), 'oak', bevel=0, parent=g)
+    for s in (-1, 1):
+        x = s * (w / 2 - 0.3)
+        box(sc, (0.5, 0.3, 0.03), (x, -0.36, 0.58), 'oak', bevel=0.004, parent=g)
+        lamp(sc, g, (x, 0.02, 1.01), lit=p.get('light') and s > 0, legs=0.28)
+    box(sc, (0.22, 0.02, 0.1), (-w / 2 + 0.3, -0.225, 0.85), 'panel', bevel=0.003, parent=g)
+
+
+def console(sc, p, g):
+    w = p.get('w', 1.4)
+    box(sc, (w, 0.32, 0.035), (0, 0, 0.78), 'oak', bevel=0.005, parent=g)
+    for sx in (-1, 1):
+        for sy in (-1, 1):
+            box(sc, (0.04, 0.04, 0.76), (sx * (w / 2 - 0.1), sy * 0.12, 0.38), 'oak', bevel=0.004, parent=g)
+        box(sc, (0.035, 0.24, 0.035), (sx * (w / 2 - 0.1), 0, 0.14), 'oak', bevel=0.003, parent=g)
+    box(sc, (w - 0.2, 0.035, 0.035), (0, 0, 0.14), 'oak', bevel=0.003, parent=g)
+
+
+def art(sc, p, g):
+    w = p.get('w', 0.55)
+    h = p.get('h', 0.75)
+    box(sc, (w + 0.02, 0.025, h + 0.02), (0, 0, 0), 'oak', bevel=0.002, parent=g)
+    box(sc, (w, 0.01, h), (0, -0.015, 0), 'art', bevel=0, parent=g)
+
+
+def bonsai(sc, p, g):
+    cyl(sc, 0.12, 0.13, (0, 0, 0.065), 'pot', r2=0.1, verts=48, bevel=0.015, parent=g)
+    cyl(sc, 0.105, 0.01, (0, 0, 0.13), 'soil', verts=32, bevel=0, parent=g)
+    trunk = [(0, 0, 0.13), (0.03, 0.01, 0.2), (-0.02, 0.02, 0.28), (0.04, -0.01, 0.34)]
+    for a, b in zip(trunk, trunk[1:]):
+        va, vb = Vector(a), Vector(b)
+        seg = cyl(sc, 0.012, (vb - va).length, (va + vb) / 2, 'bark', verts=8, bevel=0, parent=g)
+        seg.rotation_euler = (vb - va).to_track_quat('Z', 'Y').to_euler()
+    tex = bpy.data.textures.get('foliage') or bpy.data.textures.new('foliage', 'CLOUDS')
+    tex.noise_scale = 0.02
+    for x, y, z, r in ((0.05, 0, 0.35, 0.07), (-0.06, 0.03, 0.3, 0.06), (0.1, -0.02, 0.28, 0.05), (0, 0.04, 0.4, 0.05)):
+        bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=2, radius=r)
+        clump = bpy.context.active_object
+        link(clump, sc.coll('suite'))
+        clump.parent = g
+        clump.location = (x, y, z)
+        clump.scale = (1.2, 1.0, 0.6)
+        clump.data.materials.append(sc.mat('leaf'))
+        d = clump.modifiers.new('rough', 'DISPLACE')
+        d.texture = tex
+        d.strength = 0.03
+
+
+def desk(sc, p, g):
+    w = p.get('w', 1.4)
+    box(sc, (w, 0.6, 0.035), (0, 0, 0.745), 'oak', bevel=0.006, parent=g)
+    for s in (-1, 1):
+        box(sc, (0.035, 0.56, 0.73), (s * (w / 2 - 0.035), 0, 0.365), 'oak', bevel=0.005, parent=g)
+    c = bpy.data.objects.new('desk chair', None)
+    sc.coll('suite').objects.link(c)
+    c.parent = g
+    c.location = (0.1, -0.62, 0)
+    c.rotation_euler.z = math.radians(190)
+    loungeChair(sc, {}, c)
+    lamp(sc, g, (-w / 2 + 0.25, 0.1, 0.76), lit=p.get('light'), legs=0.3)
+    box(sc, (0.3, 0.22, 0.015), (0.2, 0.0, 0.77), 'linen', bevel=0.002, parent=g)
+
+
+def tub(sc, p, g):
+    w = p.get('w', 1.7)
+    d = p.get('d', 0.95)
+    h = 0.62
+    outer = box(sc, (w, d, h), (0, 0, h / 2), 'basalt', bevel=0.01, segments=3, parent=g)
+    cutter = box(sc, (w - 0.16, d - 0.16, h), (0, 0, h / 2 + 0.08), 'basalt', bevel=0, parent=g)
+    cut = outer.modifiers.new('hollow', 'BOOLEAN')
+    cut.object = cutter
+    cut.operation = 'DIFFERENCE'
+    outer.modifiers.move(len(outer.modifiers) - 1, 0)
+    cutter.hide_render = cutter.hide_viewport = True
+    box(sc, (w - 0.17, d - 0.17, 0.01), (0, 0, h - 0.07), 'water', bevel=0, parent=g)
+    box(sc, (w + 0.04, 0.05, 0.03), (0, d / 2 - 0.02, h + 0.015), 'basalt', bevel=0.004, parent=g)
+
+
+def vanity(sc, p, g):
+    w = p.get('w', 2.2)
+    box(sc, (w, 0.52, 0.1), (0, -0.02, 0.83), 'oak', bevel=0.004, parent=g)
+    box(sc, (w, 0.5, 0.03), (0, -0.01, 0.895), 'basalt', bevel=0.003, parent=g)
+    for s in (-1, 1):
+        x = s * w * 0.24
+        bowl = box(sc, (0.44, 0.36, 0.34), (x, -0.06, 0.74), 'basalt', bevel=0.006, parent=g)
+        hollow = box(sc, (0.36, 0.28, 0.3), (x, -0.06, 0.87), 'basalt', bevel=0, parent=g)
+        m = bowl.modifiers.new('basin', 'BOOLEAN')
+        m.object = hollow
+        m.operation = 'DIFFERENCE'
+        bowl.modifiers.move(len(bowl.modifiers) - 1, 0)
+        hollow.hide_render = hollow.hide_viewport = True
+        box(sc, (0.025, 0.16, 0.025), (x, 0.15, 1.02), 'chrome', bevel=0.006, parent=g)
+        for k in (-1, 1):
+            cyl(sc, 0.016, 0.03, (x + k * 0.1, 0.24, 1.02), 'chrome', verts=24, bevel=0.003, parent=g).rotation_euler.x = math.pi / 2
+    box(sc, (w + 0.04, 0.04, 1.0), (0, 0.24, 1.6), 'oak', bevel=0.003, parent=g)
+    box(sc, (w - 0.04, 0.02, 0.94), (0, 0.215, 1.6), 'mirror', bevel=0, parent=g)
+    for k, x in enumerate((-w / 2 + 0.12, -w / 2 + 0.24, w / 2 - 0.16)):
+        cyl(sc, 0.035, 0.12 + k * 0.03, (x, 0.12, 0.97 + k * 0.015), 'dark', verts=24, bevel=0.004, parent=g)
+
+
+def stool(sc, p, g):
+    box(sc, (0.46, 0.3, 0.03), (0, 0, 0.44), 'oak', bevel=0.004, parent=g)
+    for k in range(5):
+        box(sc, (0.46, 0.035, 0.012), (0, -0.12 + k * 0.06, 0.462), 'oak', bevel=0.002, parent=g)
+    for sx in (-1, 1):
+        for sy in (-1, 1):
+            box(sc, (0.035, 0.035, 0.44), (sx * 0.2, sy * 0.12, 0.22), 'oak', bevel=0.003, parent=g)
+    box(sc, (0.44, 0.24, 0.02), (0, 0, 0.14), 'oak', bevel=0.003, parent=g)
+    soft(sc, (0.32, 0.22, 0.1), (0, 0, 0.51), 'linen', give=0.03, parent=g)
+
+
+KINDS = {f.__name__: f for f in (door, wardrobe, windowBench, roundTable, loungeChair, floorLamp, slats, footTable,
+                                 tatami, twinBeds, headboard, console, art, bonsai, desk, tub, vanity, stool)}
 
 
 def furnish(sc, p, floor_z):

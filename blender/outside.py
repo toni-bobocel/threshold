@@ -1,5 +1,6 @@
-"""The world around each suite, in real 3D this time: the view from the window
-is the same geometry the camera flies over on the way in."""
+"""What the Deluxe Suite looks out on, in real 3D: west from the 37th floor of
+Otemachi Tower, over the moat and the forest of the Imperial Palace East
+Gardens, to the towers of Shinjuku and, at sunset, Fuji."""
 
 import math
 
@@ -8,9 +9,11 @@ import bpy
 import numpy as np
 from mathutils import Matrix, Vector
 
-import kit
 import materials as M
 from kit import box
+
+FLOOR = 5.2
+FLOORS = 38
 
 
 def smoothstep(x, a, b):
@@ -62,11 +65,8 @@ def sun_and_sky(suite):
             break
         except TypeError:
             continue
-    # golden hour: whatever the plan says, keep the sun low enough to colour the sky
-    elevation = min(math.asin(d.z), math.radians(1.8))
-    d = Vector((d.x, d.y, 0)).normalized() * math.cos(elevation) + Vector((0, 0, math.sin(elevation)))
-    rotation = math.atan2(d.x, d.y)
-    for attr, val in (('sun_elevation', elevation), ('sun_rotation', -rotation), ('sun_disc', False),
+    elevation = math.asin(d.z)
+    for attr, val in (('sun_elevation', elevation), ('sun_rotation', -math.atan2(d.x, d.y)), ('sun_disc', False),
                       ('air_density', 1.6), ('aerosol_density', 4.0), ('dust_density', 4.0), ('ozone_density', 1.4)):
         if hasattr(sky, attr):
             setattr(sky, attr, val)
@@ -77,9 +77,9 @@ def sun_and_sky(suite):
     nt.links.new(bg.outputs['Background'], out.inputs['Surface'])
 
     light = bpy.data.lights.new('sun', 'SUN')
-    light.energy = 4.2
-    light.angle = math.radians(1.2)
-    light.color = (1.0, 0.82, 0.62)
+    light.energy = 4.5
+    light.angle = math.radians(0.8)
+    light.color = (1.0, 0.74, 0.5)
     sun = bpy.data.objects.new('sun', light)
     bpy.context.scene.collection.objects.link(sun)
     sun.rotation_euler = (-d).to_track_quat('-Z', 'Y').to_euler()
@@ -90,8 +90,7 @@ def merged(name, parts, mat, coll, roof=None):
     """Many boxes in one mesh: the city is thousands of buildings and one object."""
     bm = bmesh.new()
     for (w, d, h), (x, y, z), rot in parts:
-        geom = bmesh.ops.create_cube(bm, size=1.0)
-        verts = geom['verts']
+        verts = bmesh.ops.create_cube(bm, size=1.0)['verts']
         bmesh.ops.scale(bm, vec=(w, d, h), verts=verts)
         bmesh.ops.rotate(bm, verts=verts, cent=(0, 0, 0), matrix=Matrix.Rotation(rot, 3, 'Z'))
         bmesh.ops.translate(bm, vec=(x, y, z + h / 2), verts=verts)
@@ -110,18 +109,16 @@ def merged(name, parts, mat, coll, roof=None):
     return obj
 
 
-def terrain(name, size, res, height, mat, coll):
-    xs = np.linspace(-size / 2, size / 2, res)
-    X, Y = np.meshgrid(xs, xs)
+def heightfield(name, x0, x1, y0, y1, res, height, mat, coll):
+    xs = np.linspace(x0, x1, res)
+    ys = np.linspace(y0, y1, max(2, int(res * (y1 - y0) / (x1 - x0))))
+    X, Y = np.meshgrid(xs, ys)
     Z = height(X, Y)
-    me = bpy.data.meshes.new(name)
+    rows, cols = X.shape
     verts = np.stack([X.ravel(), Y.ravel(), Z.ravel()], axis=1)
-    idx = np.arange(res * res).reshape(res, res)
-    a = idx[:-1, :-1].ravel()
-    b = idx[:-1, 1:].ravel()
-    c = idx[1:, 1:].ravel()
-    d = idx[1:, :-1].ravel()
-    faces = np.stack([a, b, c, d], axis=1)
+    idx = np.arange(rows * cols).reshape(rows, cols)
+    faces = np.stack([idx[:-1, :-1].ravel(), idx[:-1, 1:].ravel(), idx[1:, 1:].ravel(), idx[1:, :-1].ravel()], axis=1)
+    me = bpy.data.meshes.new(name)
     me.from_pydata(verts.tolist(), [], faces.tolist())
     for p in me.polygons:
         p.use_smooth = True
@@ -131,270 +128,156 @@ def terrain(name, size, res, height, mat, coll):
     return obj
 
 
-def scatter(name, count, place, radius, mat, coll, subdiv=1, squash=0.6):
-    bm = bmesh.new()
-    for i in range(count):
-        p = place(i)
-        if p is None:
-            continue
-        r = radius(i)
-        geom = bmesh.ops.create_icosphere(bm, subdivisions=subdiv, radius=r)
-        bmesh.ops.scale(bm, vec=(1, 1, squash), verts=geom['verts'])
-        bmesh.ops.translate(bm, vec=p, verts=geom['verts'])
-    me = bpy.data.meshes.new(name)
-    bm.to_mesh(me)
-    bm.free()
-    me.materials.append(mat)
-    obj = bpy.data.objects.new(name, me)
-    coll.objects.link(obj)
-    return obj
+def canopy_material():
+    """Seen from 190 m up, a forest is a rough green surface with darker hollows
+    and a few crowns catching the light. Colour follows height for that."""
+    t = M.Tree('canopy')
+    geo = t.add('ShaderNodeNewGeometry', -900, 0)
+    sep = t.add('ShaderNodeSeparateXYZ', -700, 0)
+    t.link(geo, 'Position', sep, 'Vector')
+    div = t.add('ShaderNodeMath', -550, 0, operation='DIVIDE')
+    div.inputs[1].default_value = 24.0
+    t.link(sep, 'Z', div, 0)
+    ramp = t.add('ShaderNodeValToRGB', -350, 0)
+    # lawns at the bottom, dark hollows between crowns, light on the tops
+    ramp.color_ramp.elements[0].color = M.rgb('#5b7440')
+    ramp.color_ramp.elements[1].color = M.rgb('#4f6b33')
+    hollow = ramp.color_ramp.elements.new(0.22)
+    hollow.color = M.rgb('#16260f')
+    mid = ramp.color_ramp.elements.new(0.6)
+    mid.color = M.rgb('#2f4a22')
+    t.link(div, 'Value', ramp, 'Fac')
+    leaves = t.add('ShaderNodeTexVoronoi', -550, -250)
+    t.set(leaves, Scale=0.35)
+    t.link(geo, 'Position', leaves, 'Vector')
+    mix = t.add('ShaderNodeMix', 0, 0, data_type='RGBA', blend_type='MULTIPLY')
+    t.set(mix, Factor=0.45)
+    t.link(ramp, 'Color', mix, 'A')
+    t.links.new(leaves.outputs['Color'], mix.inputs[7])
+    t.links.new(mix.outputs[2], t.bsdf.inputs['Base Color'])
+    t.set(t.bsdf, Roughness=0.95)
+    t.bump(leaves, 'Distance', strength=0.6, distance=1.5)
+    return t.mat
 
 
-# -- Tokyo -----------------------------------------------------------------
-
-FLOOR = 5.2
-FLOORS = 38
-
-
-def tokyo(sc, suite):
+def build(sc, suite):
     coll = sc.coll('outside')
-    level = suite['gauge']['to']
-    z0 = (level - 1) * FLOOR
-    # the tower's north-east corner is the suite's: glass on two sides
-    tx0, tx1, ty0, ty1 = 7.25 - 46, 7.25, 5.25 - 46, 5.25
+    z0 = (suite['gauge']['to'] - 1) * FLOOR
+    H = suite['height']
     top = FLOORS * FLOOR
 
-    office = M.windows('offices', wall='#20242b', lit=0.2)
-    aman = M.windows('aman floors', wall='#1e1c1b', lit=0.6, warm='#ffc786')
-    inset = 0.7
+    # The suite's window wall is at x = 0, facing west, from y = 0 to y = -7.1.
+    # The tower is 46 m square, with the suite in the middle of its west face.
+    tx0, tx1, ty0, ty1 = -0.3, 45.7, -26.5, 19.5
+    inset = 0.9
     ix0, ix1, iy0, iy1 = tx0 + inset, tx1 - inset, ty0 + inset, ty1 - inset
-    box(sc, (ix1 - ix0, iy1 - iy0, z0 - 0.6), Vector(((ix0 + ix1) / 2, (iy0 + iy1) / 2, (z0 - 0.6) / 2)), office, bevel=0, coll='outside')
-    upper = z0 + suite['height'] + 0.6
-    box(sc, (ix1 - ix0, iy1 - iy0, top - upper), Vector(((ix0 + ix1) / 2, (iy0 + iy1) / 2, (top + upper) / 2)), aman, bevel=0, coll='outside')
-    band = (z0 - 0.6, upper)
-    hb = band[1] - band[0]
-    box(sc, (-7.3 - ix0, iy1 - iy0, hb), Vector(((ix0 - 7.3) / 2, (iy0 + iy1) / 2, sum(band) / 2)), aman, bevel=0, coll='outside')
-    box(sc, (ix1 + 7.3, -5.3 - iy0, hb), Vector(((ix1 - 7.3) / 2, (iy0 - 5.3) / 2, sum(band) / 2)), aman, bevel=0, coll='outside')
+    band = (z0 - 0.6, z0 + H + 0.7)
 
-    # tinted, so from outside the tower reads as glass and not as a cut-away
-    curtain = M.glass('curtain', (0.3, 0.36, 0.42, 1))
-    frame = sc.mat('mullion')
-    faces = (((tx0, ty1), (tx1, ty1), 'n'), ((tx1, ty1), (tx1, ty0), 'e'), ((tx1, ty0), (tx0, ty0), 's'), ((tx0, ty0), (tx0, ty1), 'w'))
-    for (ax, ay), (bx, by), side in faces:
+    offices = M.windows('tower rooms', wall='#1b1a19', lit=0.22, warm='#ffc58a', floor=FLOOR)
+    box(sc, (ix1 - ix0, iy1 - iy0, band[0]), Vector(((ix0 + ix1) / 2, (iy0 + iy1) / 2, band[0] / 2)), offices, bevel=0, coll='outside')
+    box(sc, (ix1 - ix0, iy1 - iy0, top - band[1]), Vector(((ix0 + ix1) / 2, (iy0 + iy1) / 2, (top + band[1]) / 2)), offices, bevel=0, coll='outside')
+    hb = band[1] - band[0]
+    zc = sum(band) / 2
+    # the rest of floor 37: other suites to the north and south, the core behind
+    box(sc, (ix1 - 0.4, iy1 - 0.4, hb), Vector((ix1 / 2 + 0.2, (0.4 + iy1) / 2, zc)), offices, bevel=0, coll='outside')
+    box(sc, (ix1 - 0.4, -7.5 - iy0, hb), Vector((ix1 / 2 + 0.2, (iy0 - 7.5) / 2, zc)), offices, bevel=0, coll='outside')
+    box(sc, (ix1 - 10.4, 7.9, hb), Vector(((ix1 + 10.4) / 2, -3.55, zc)), offices, bevel=0, coll='outside')
+
+    curtain = M.glass('curtain', (0.16, 0.18, 0.2, 1))
+    stone = M.tiles('cladding', '#4a4744', size=1.3, rough=0.5)
+    faces = (((tx0, ty1), (tx0, ty0)), ((tx0, ty0), (tx1, ty0)), ((tx1, ty0), (tx1, ty1)), ((tx1, ty1), (tx0, ty1)))
+    for n, ((ax, ay), (bx, by)) in enumerate(faces):
         length = math.hypot(bx - ax, by - ay)
         ang = math.atan2(by - ay, bx - ax)
         mid = Vector(((ax + bx) / 2, (ay + by) / 2, 0))
+        along = Vector((math.cos(ang), math.sin(ang), 0))
+        normal = Vector((along.y, -along.x, 0))
         spans = [(0, top)]
-        if side in ('n', 'e'):
-            spans = [(0, band[0] + 0.5), (band[1] - 0.5, top)]
+        if n == 0:
+            # leave the glass out where the suite's own window is the facade
+            spans = [(0, band[0] + 0.4), (band[1] - 0.4, top)]
         for z_a, z_b in spans:
             g = box(sc, (length, 0.03, z_b - z_a), mid + Vector((0, 0, (z_a + z_b) / 2)), curtain, bevel=0, coll='outside')
             g.rotation_euler.z = ang
             g.visible_shadow = False
-            for k in range(int(length / 1.6) + 1):
-                t = k * 1.6 - length / 2
-                m = box(sc, (0.06, 0.14, z_b - z_a), mid + Vector((math.cos(ang) * t, math.sin(ang) * t, (z_a + z_b) / 2)), frame, bevel=0, coll='outside')
-                m.rotation_euler.z = ang
-        f = 1
-        while f * FLOOR < top:
-            z = f * FLOOR
-            if not (band[0] < z < band[1]) or side in ('s', 'w'):
-                sp = box(sc, (length + 0.2, 0.3, 0.4), mid + Vector((0, 0, z - 0.2)), frame, bevel=0, coll='outside')
-                sp.rotation_euler.z = ang
-            f += 1
-    box(sc, (47, 47, 3.0), Vector(((tx0 + tx1) / 2, (ty0 + ty1) / 2, top + 1.5)), frame, bevel=0, coll='outside')
+        # deep stone fins every bay and a spandrel at every floor: Otemachi Tower's grid
+        k = 0.0
+        while k <= length + 0.01:
+            fin = box(sc, (0.22, 0.3, top), mid + along * (k - length / 2) + normal * 0.13 + Vector((0, 0, top / 2)), stone, bevel=0.01, coll='outside')
+            fin.rotation_euler.z = ang
+            k += 4.6
+        for f in range(1, FLOORS + 1):
+            sp = box(sc, (length + 0.6, 0.4, 0.55), mid + normal * 0.2 + Vector((0, 0, f * FLOOR - 0.25)), stone, bevel=0.006, coll='outside')
+            sp.rotation_euler.z = ang
+    box(sc, (47.5, 47.5, 4.0), Vector(((tx0 + tx1) / 2, (ty0 + ty1) / 2, top + 2.0)), stone, bevel=0.02, coll='outside')
 
-    # Tokyo: thousands of blocks, low near the tower and clear of the palace grounds to the west
-    noise = value_noise(4)
+    # The palace: a moat with stone walls, then a forest a kilometre and a half across.
+    fbm = value_noise(4)
+    px0, px1, py0, py1 = -1650.0, -170.0, -720.0, 760.0
+
+    def canopy(X, Y):
+        inside = smoothstep(X, px0, px0 + 60) * smoothstep(-X, -px1, -px1 + 60) * smoothstep(Y, py0, py0 + 60) * smoothstep(-Y, -py1, -py1 + 60)
+        lawn = smoothstep(fbm(X / 260, Y / 260, 3), 0.6, 0.66)
+        trees = 8 + fbm(X / 18, Y / 18, 4) * 22 + fbm(X / 4, Y / 4, 2) * 4
+        return inside * trees * (1 - lawn * 0.92)
+
+    heightfield('palace forest', px0, px1, py0, py1, 700, canopy, canopy_material(), coll)
+    moat = M.water('moat', '#425651')
+    walls = M.tiles('moat walls', '#a8a196', size=0.8, rough=0.8)
+    for (sx, sy, cx, cy) in ((px1 - px0 + 120, 40, (px0 + px1) / 2, py0 - 20), (px1 - px0 + 120, 40, (px0 + px1) / 2, py1 + 20),
+                             (40, py1 - py0, px0 - 20, (py0 + py1) / 2), (40, py1 - py0, px1 + 20, (py0 + py1) / 2)):
+        box(sc, (sx, sy, 0.4), Vector((cx, cy, -0.6)), moat, bevel=0, coll='outside')
+        box(sc, (sx + 6, sy + 6, 2.0), Vector((cx, cy, -1.6)), walls, bevel=0, coll='outside')
+    plaster = M.plain('palace walls', '#ddd8cc', rough=0.8)
+    copper = M.plain('palace roofs', '#4d5a53', rough=0.6, metal=0.3)
+    for x, y, w, d in ((-930, 40, 120, 45), (-860, -120, 70, 50), (-1100, 210, 60, 30)):
+        box(sc, (w, d, 9), Vector((x, y, 4.5)), plaster, bevel=0.2, coll='outside')
+        box(sc, (w + 4, d + 4, 3), Vector((x, y, 10)), copper, bevel=0.8, coll='outside')
+
+    # Tokyo everywhere else: low and dense, taller towards Marunouchi and Shinjuku.
     rng = np.random.default_rng(9)
     parts = []
-    for i in range(5200):
+    for i in range(9000):
         a = i * 2.39996
-        r = 120 + math.sqrt(i / 5200) * 3200
-        x = (tx0 + tx1) / 2 + math.cos(a) * r
-        y = (ty0 + ty1) / 2 + math.sin(a) * r
-        if -1300 < x < -250 and abs(y) < 650:
+        r = 70 + math.sqrt(i / 9000) * 7800
+        x = 23 + math.cos(a) * r
+        y = -3 + math.sin(a) * r
+        if px0 - 90 < x < px1 + 90 and py0 - 90 < y < py1 + 90:
             continue
-        # keep the approach clear: nothing on the line the camera flies in along
-        along = (x - 7) * 0.7071 + (y - 5) * 0.7071
-        across = abs(-(x - 7) * 0.7071 + (y - 5) * 0.7071 - 260 * min(1, max(0, along / 720)))
-        if along > 30 and across < 140:
+        if -8 < x < 60 and -40 < y < 32:
             continue
-        n = float(noise(np.array([x / 300]), np.array([y / 300]))[0])
-        h = 12 + n ** 3 * min(170, r * 0.2) * 2.2
-        w = 16 + rng.random() * 34
+        n = float(fbm(np.array([x / 400]), np.array([y / 400]))[0])
+        h = 9 + n ** 3 * 160 * (1.4 if x > -100 else 0.8)
+        w = 14 + rng.random() * 36
         parts.append(((w, w * (0.6 + rng.random() * 0.8), h), (x, y, 0), round(a) * 0.1))
-    roofs = M.plain('roofs', '#55545a', rough=0.8)
-    merged('city', parts, M.windows('city', wall='#262a32', lit=0.1), coll, roof=roofs)
+    # Shinjuku: a cluster of towers on the horizon, a little north of west
+    for _ in range(34):
+        w = 30 + rng.random() * 30
+        parts.append(((w, w, 120 + rng.random() * 130), (-6400 + rng.normal(0, 260), 380 + rng.normal(0, 380), 0), rng.random()))
+    # the office towers right next door in Otemachi and Marunouchi
+    for x, y, h in ((-40, 95, 150), (30, 110, 175), (-60, -95, 140), (20, -120, 165), (90, 60, 120)):
+        parts.append(((44, 40, h), (x, y, 0), 0.0))
+    merged('tokyo', parts, M.windows('tokyo', wall='#3c3f45', lit=0.08, warm='#ffd19a'), coll, roof=M.plain('roofs', '#5d5c5f', rough=0.85))
 
-    ground = box(sc, (12000, 12000, 1), Vector((0, 0, -0.5)), M.plain('streets', '#3a3a3d', rough=0.95), bevel=0, coll='outside')
-    ground.name = 'ground'
-    garden = M.plain('garden', '#2d4027', rough=1.0)
-    box(sc, (900, 640, 0.6), Vector((-760, 0, 0.3)), garden, bevel=0, coll='outside')
-    moat = box(sc, (960, 700, 0.3), Vector((-760, 0, 0.1)), M.water('moat', '#5f7480'), bevel=0, coll='outside')
-    moat.name = 'moat'
-    scatter('palace trees', 2400, lambda i: (-760 + (rng.random() - 0.5) * 860, (rng.random() - 0.5) * 600, 4),
-            lambda i: 3 + rng.random() * 5, M.plain('canopy', '#243b22', rough=1.0), coll)
-    fuji = bpy.data.meshes.new('fuji')
-    bm = bmesh.new()
-    bmesh.ops.create_cone(bm, cap_ends=False, segments=96, radius1=5200, radius2=420, depth=1900)
-    bm.to_mesh(fuji)
-    bm.free()
-    fuji.materials.append(M.plain('fuji', '#6d6a82', rough=1.0))
-    f = bpy.data.objects.new('fuji', fuji)
-    coll.objects.link(f)
-    f.location = (-26000, 9000, 950)
+    box(sc, (40000, 40000, 1), Vector((0, 0, -0.5)), M.plain('streets', '#4a4a4c', rough=0.95), bevel=0, coll='outside')
 
-    corner = Vector((7.0, 5.0, z0))
-    out = Vector((1, 1, 0)).normalized()
-    side = Vector((-out.y, out.x, 0))
-    centre = Vector(((tx0 + tx1) / 2, (ty0 + ty1) / 2, 0))
+    # Fuji is 100 km away; at a quarter of the distance and a quarter of the size it sits in the same place in frame
+    snow = M.plain('snow', '#e9e6ef', rough=0.7)
+    rock = M.plain('fuji', '#5c5a6e', rough=1.0)
+    for name, r1, depth, z, mat in (('fuji', 2600, 950, 475, rock), ('fuji snow', 900, 330, 787, snow)):
+        me = bpy.data.meshes.new(name)
+        bm = bmesh.new()
+        bmesh.ops.create_cone(bm, cap_ends=False, segments=128, radius1=r1, radius2=170, depth=depth)
+        bm.to_mesh(me)
+        bm.free()
+        me.materials.append(mat)
+        cone = bpy.data.objects.new(name, me)
+        coll.objects.link(cone)
+        cone.location = (-23000, -9800, z)
+
+    eye = Vector((0, -4.8, z0))
     return {
         'z0': z0,
-        'pos': [corner + out * 520 + side * 200 + Vector((0, 0, 110 - z0)), corner + out * 360 + side * 90 + Vector((0, 0, 150 - z0)),
-                corner + out * 110 + Vector((0, 0, 12)), corner + out * 22 + Vector((0, 0, 1.8))],
-        'look': [centre + Vector((0, 0, 120)), centre + Vector((0, 0, 160)), corner + Vector((0, 0, 2)), corner - out * 5 + Vector((0, 0, 1.4))],
+        'pos': [Vector((-950, 240, 230)), Vector((-520, 110, 215)), eye + Vector((-170, 10, 14)), eye + Vector((-14, 0, 1.6))],
+        'look': [Vector((23, -3, 160)), Vector((10, -4, 195)), eye + Vector((0, 0, 2)), eye + Vector((3, 0, 1.2))],
     }
-
-
-# -- Amangiri ----------------------------------------------------------------
-
-def amangiri(sc, suite):
-    coll = sc.coll('outside')
-    fbm = value_noise(7)
-
-    def height(X, Y):
-        k = fbm(X / 900, Y / 900, 4)
-        mesa = smoothstep(k, 0.52, 0.56) * 170 + smoothstep(k, 0.62, 0.64) * 90
-        rough = fbm(X / 120, Y / 120, 3) * 14
-        clear = smoothstep(np.hypot(X, Y), 150, 650)
-        return (mesa + rough) * clear - 0.4
-
-    rock = M.strata('sandstone', '#a4592f', '#d9a070')
-    terrain('desert', 7000, 420, height, rock, coll)
-    # past the modelled terrain the floor of the desert just carries on to the horizon
-    box(sc, (60000, 60000, 1), Vector((0, 0, -1.2)), M.plain('far desert', '#b97a52', rough=1.0), bevel=0, coll='outside')
-
-    concrete = sc.mat('wall')
-    centre = Vector((0, -78, 0))
-    for i in range(15):
-        a = math.radians(90) + (i - 7) * math.radians(13)
-        if i == 7:
-            continue  # that one is ours
-        p = centre + Vector((math.cos(a), math.sin(a), 0)) * 78
-        b = box(sc, (16, 12, 4.2), p + Vector((0, 0, 2.1)), concrete, bevel=0.02, coll='outside')
-        b.rotation_euler.z = a - math.pi / 2
-        g = box(sc, (12, 0.05, 3.2), p + Vector((math.cos(a), math.sin(a), 0)) * 6.03 + Vector((0, 0, 1.7)), sc.mat('glass'), bevel=0, coll='outside')
-        g.rotation_euler.z = a - math.pi / 2
-    box(sc, (40, 10, 0.4), centre + Vector((0, 0, -0.15)), sc.mat('water'), bevel=0, coll='outside')
-
-    rng = np.random.default_rng(3)
-
-    def place(i):
-        a = i * 2.39996
-        r = 26 + math.sqrt(i / 2600) * 1800
-        x, y = math.cos(a) * r, math.sin(a) * r
-        if abs(x) < 12 and -14 < y < 14:
-            return None
-        return (x, y, float(height(np.array([x]), np.array([y]))[0]) + 0.2)
-
-    scatter('sage', 2600, place, lambda i: 0.5 + rng.random() * 0.9, M.plain('sage', '#7c7f5e', rough=1.0), coll)
-
-    return {
-        'z0': 0.0,
-        'pos': [Vector((-1100, 1300, 430)), Vector((-480, 600, 300)), Vector((-110, 170, 70)), Vector((3, 26, 2.4))],
-        'look': [Vector((0, 0, 70)), Vector((0, 0, 30)), Vector((0, 0, 4)), Vector((1, 2, 1.5))],
-    }
-
-
-# -- Amanpuri ----------------------------------------------------------------
-
-PLATEAU = 18.0
-
-
-def amanpuri(sc, suite):
-    coll = sc.coll('outside')
-    fbm = value_noise(2)
-
-    def height(X, Y):
-        land = smoothstep(-Y, -140, 260)
-        h = land * (30 + fbm(X / 260, Y / 260, 4) * 90) - 8 + fbm(X / 40, Y / 40, 3) * 6
-        flat = 1 - smoothstep(np.hypot(X, Y + 2), 16, 55)
-        return h * (1 - flat) + (PLATEAU - 0.45) * flat
-
-    land = M.Tree('headland')
-    geo = land.add('ShaderNodeNewGeometry', -900, 0)
-    sep = land.add('ShaderNodeSeparateXYZ', -700, 0)
-    land.link(geo, 'Position', sep, 'Vector')
-    ramp = land.add('ShaderNodeValToRGB', -300, 0)
-    ramp.color_ramp.elements[0].position = 0.06
-    ramp.color_ramp.elements[0].color = M.rgb('#d9c7a3')
-    ramp.color_ramp.elements[1].position = 0.1
-    ramp.color_ramp.elements[1].color = M.rgb('#30482b')
-    div = land.add('ShaderNodeMath', -500, 0, operation='DIVIDE')
-    div.inputs[1].default_value = 40.0
-    land.link(sep, 'Z', div, 0)
-    land.link(div, 'Value', ramp, 'Fac')
-    grass = land.add('ShaderNodeTexNoise', -300, -250)
-    land.set(grass, Scale=0.08, Detail=10.0, Roughness=0.7)
-    land.link(geo, 'Position', grass, 'Vector')
-    vary = land.add('ShaderNodeMix', 100, 0, data_type='RGBA', blend_type='OVERLAY')
-    land.set(vary, Factor=0.55)
-    land.link(ramp, 'Color', vary, 'A')
-    land.links.new(grass.outputs['Color'], vary.inputs[7])
-    land.links.new(vary.outputs[2], land.bsdf.inputs['Base Color'])
-    land.set(land.bsdf, Roughness=1.0)
-    land.bump(grass, 'Fac', strength=0.5, distance=1.0)
-    terrain('headland', 4200, 360, height, land.mat, coll)
-
-    sea_mat = M.Tree('sea')
-    mp = sea_mat.coords()
-    wave = sea_mat.add('ShaderNodeTexNoise', -400, -200)
-    sea_mat.set(wave, Scale=0.5, Detail=8.0)
-    sea_mat.link(mp, 'Vector', wave, 'Vector')
-    sea_mat.set(sea_mat.bsdf, **{'Base Color': M.rgb('#1f5a63'), 'Roughness': 0.04, 'IOR': 1.33, 'Coat Weight': 0.3})
-    sea_mat.bump(wave, 'Fac', strength=0.12, distance=0.4)
-    box(sc, (12000, 12000, 1), Vector((0, 0, -0.5)), sea_mat.mat, bevel=0, coll='outside')
-
-    # one palm, instanced: three hundred copies cost almost nothing
-    proto = bpy.data.collections.new('palm proto')
-    sc.collections['palm proto'] = proto
-    g = kit.empty(sc, 'palm', (0, 0, 0), coll='palm proto')
-    kit.palm(sc, {'h': 8.0}, g, coll='palm proto')
-    rng = np.random.default_rng(5)
-    for i in range(1400):
-        a = i * 2.39996
-        r = 18 + (i / 1400) ** 0.8 * 520
-        x, y = math.cos(a) * r, math.sin(a) * r - 80
-        h = float(height(np.array([x]), np.array([y]))[0])
-        if h < 2.5 or (abs(x) < 14 and -8 < y < 16):
-            continue
-        inst = bpy.data.objects.new('palm', None)
-        inst.instance_type = 'COLLECTION'
-        inst.instance_collection = proto
-        coll.objects.link(inst)
-        inst.location = (x, y, h)
-        inst.rotation_euler = (rng.normal(0, 0.05), rng.normal(0, 0.05), rng.random() * math.tau)
-        s = 0.75 + rng.random() * 0.5
-        inst.scale = (s, s, s)
-
-    teak = M.plain('villa teak', '#7b5b40', rough=0.85)
-    roof = sc.mat('roof_out')
-    for i in range(22):
-        x = -260 + i * 25 + math.sin(i * 3.1) * 10
-        y = -40 - math.cos(i * 1.7) * 30
-        if abs(x) < 30:
-            continue
-        h = float(height(np.array([x]), np.array([y]))[0])
-        body = box(sc, (9, 7, 3.4), Vector((x, y, h + 1.7)), teak, bevel=0.02, coll='outside')
-        r = box(sc, (10.5, 8.5, 2.6), Vector((x, y, h + 4.2)), roof, bevel=0.02, coll='outside')
-        body.rotation_euler.z = r.rotation_euler.z = math.sin(i) * 0.3
-
-    return {
-        'z0': PLATEAU,
-        'pos': [Vector((320, 950, 150)), Vector((130, 400, 75)), Vector((30, 95, 40)), Vector((0, 24, PLATEAU + 1.8))],
-        'look': [Vector((0, 0, 30)), Vector((0, 0, PLATEAU)), Vector((0, 0, PLATEAU + 2)), Vector((-1, 2, PLATEAU + 1.2))],
-    }
-
-
-BUILDERS = {'city': tokyo, 'desert': amangiri, 'sea': amanpuri}

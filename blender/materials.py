@@ -73,14 +73,17 @@ def boards(name, color, width=0.18, length=1.4, rough=0.45, coat=0.15):
     t.set(brick, Color1=shade(color, 0.86), Color2=shade(color, 1.12), Mortar=shade(color, 0.45),
           Scale=1.0, **{'Mortar Size': 0.0025, 'Mortar Smooth': 0.2, 'Bias': 0.0, 'Brick Width': length, 'Row Height': width})
     t.link(mp, 'Vector', brick, 'Vector')
-    wave = t.add('ShaderNodeTexWave', -400, -150, wave_type='BANDS', bands_direction='X', wave_profile='SIN')
-    t.set(wave, Scale=1.4, Distortion=9.0, Detail=6.0, **{'Detail Scale': 1.6})
-    t.link(mp, 'Vector', wave, 'Vector')
+    stretch = t.add('ShaderNodeMapping', -550, -150)
+    stretch.inputs['Scale'].default_value = (0.06, 1.0, 1.0)
+    t.link(mp, 'Vector', stretch, 'Vector')
+    wave = t.add('ShaderNodeTexNoise', -400, -150)
+    t.set(wave, Scale=40.0, Detail=10.0, Roughness=0.55, Distortion=0.5)
+    t.link(stretch, 'Vector', wave, 'Vector')
     mix = t.add('ShaderNodeMix', 200, 100, data_type='RGBA', blend_type='MULTIPLY')
     t.set(mix, Factor=0.35)
     t.link(brick, 'Color', mix, 'A')
     ramp = t.add('ShaderNodeValToRGB', 0, -150)
-    ramp.color_ramp.elements[0].color = (0.75, 0.75, 0.75, 1)
+    ramp.color_ramp.elements[0].color = (0.86, 0.86, 0.86, 1)
     ramp.color_ramp.elements[1].color = (1, 1, 1, 1)
     t.link(wave, 'Fac', ramp, 'Fac')
     t.links.new(ramp.outputs['Color'], mix.inputs[7])
@@ -94,12 +97,16 @@ def grain(name, color, rough=0.45):
     """Solid wood for furniture: grain only, no joints."""
     t = Tree(name)
     mp = t.coords()
-    wave = t.add('ShaderNodeTexWave', -400, 0, wave_type='BANDS', bands_direction='X')
-    t.set(wave, Scale=2.2, Distortion=7.0, Detail=5.0)
-    t.link(mp, 'Vector', wave, 'Vector')
+    # fine, straight grain: camphor and oak are quarter-sawn here, no cathedral figure
+    stretch = t.add('ShaderNodeMapping', -550, 0)
+    stretch.inputs['Scale'].default_value = (1.0, 1.0, 0.08)
+    t.link(mp, 'Vector', stretch, 'Vector')
+    wave = t.add('ShaderNodeTexNoise', -400, 0)
+    t.set(wave, Scale=38.0, Detail=10.0, Roughness=0.55, Distortion=0.6)
+    t.link(stretch, 'Vector', wave, 'Vector')
     ramp = t.add('ShaderNodeValToRGB', 0, 0)
-    ramp.color_ramp.elements[0].color = shade(color, 0.8)
-    ramp.color_ramp.elements[1].color = shade(color, 1.1)
+    ramp.color_ramp.elements[0].color = shade(color, 0.9)
+    ramp.color_ramp.elements[1].color = shade(color, 1.06)
     t.link(wave, 'Fac', ramp, 'Fac')
     t.link(ramp, 'Color', t.bsdf, 'Base Color')
     t.set(t.bsdf, Roughness=rough, **{'Coat Weight': 0.25, 'Coat Roughness': 0.25})
@@ -154,6 +161,36 @@ def fabric(name, color, sheen=0.6):
     t.link(mp, 'Vector', n, 'Vector')
     t.set(t.bsdf, **{'Base Color': rgb(color), 'Roughness': 0.95, 'Sheen Weight': sheen, 'Sheen Roughness': 0.4})
     t.bump(n, 'Fac', strength=0.35, distance=0.003)
+    return t.mat
+
+
+def washi(name, color):
+    """Washi on timber: tall paper panels with fine joints and a fibre you see up close."""
+    t = Tree(name)
+    mp = t.coords()
+    sep = t.add('ShaderNodeSeparateXYZ', -700, 200)
+    t.link(mp, 'Vector', sep, 'Vector')
+    # walls run along x or y, so let both feed the brick's horizontal axis
+    along = t.add('ShaderNodeMath', -550, 250, operation='ADD')
+    t.link(sep, 'X', along, 0)
+    t.link(sep, 'Y', along, 1)
+    uv = t.add('ShaderNodeCombineXYZ', -400, 250)
+    t.link(along, 'Value', uv, 'X')
+    t.link(sep, 'Z', uv, 'Y')
+    brick = t.add('ShaderNodeTexBrick', -200, 200, offset=0.0)
+    t.set(brick, Color1=rgb(color), Color2=shade(color, 0.97), Mortar=shade(color, 0.82), Scale=1.0,
+          **{'Mortar Size': 0.0018, 'Brick Width': 0.9, 'Row Height': 2.4})
+    t.link(uv, 'Vector', brick, 'Vector')
+    fibre = t.add('ShaderNodeTexNoise', -200, -150)
+    t.set(fibre, Scale=180.0, Detail=12.0, Roughness=0.75, Distortion=2.0)
+    t.link(mp, 'Vector', fibre, 'Vector')
+    mix = t.add('ShaderNodeMix', 150, 100, data_type='RGBA', blend_type='OVERLAY')
+    t.set(mix, Factor=0.06)
+    t.link(brick, 'Color', mix, 'A')
+    t.links.new(fibre.outputs['Color'], mix.inputs[7])
+    t.links.new(mix.outputs[2], t.bsdf.inputs['Base Color'])
+    t.set(t.bsdf, Roughness=0.92, **{'Sheen Weight': 0.3})
+    t.bump(fibre, 'Fac', strength=0.08, distance=0.002)
     return t.mat
 
 
