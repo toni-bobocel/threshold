@@ -164,7 +164,7 @@
   .gauge { top: auto; bottom: 120px; width: 200px; padding: 14px 16px; }
   .gauge__value { font-size: 48px; }
   .gauge__facts, .gauge__note { display: none; }
-  .figures { gap: 22px; }
+  .figures { gap: 22px; bottom: 52px; }
   .figures strong { font-size: 22px; }
   .note { right: var(--gutter); width: auto; bottom: 54px; }
   .plan { display: none; }
