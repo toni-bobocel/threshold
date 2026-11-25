@@ -70,8 +70,8 @@ export function buildSuite(suite: Suite): Built {
         metalness: 0,
         normalMap: normal,
         normalScale: new THREE.Vector2(0.35, 0.35),
-        envMapIntensity: 1.5,
-        clearcoat: 1,
+        envMapIntensity: 1,
+        clearcoat: 0.35,
       }), 0.9)
       mats.set(role, m)
       return m

@@ -49,7 +49,7 @@ export const paints = {
         let y = -rnd() * s
         while (y < s) {
           const len = s * (0.45 + rnd() * 0.6)
-          g.fillStyle = shade(base, (rnd() - 0.5) * 0.07)
+          g.fillStyle = shade(base, (rnd() - 0.5) * 0.04)
           g.fillRect(i * w, y, w, len)
           g.strokeStyle = 'rgba(40,25,10,0.07)'
           for (let k = 0; k < 14; k++) {

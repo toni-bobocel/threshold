@@ -31,21 +31,3 @@ export function length(stops: Stop[]) {
   const read = stops.filter(s => s.title).length * beats.read
   return beats.arrive + beats.fly + beats.flash + beats.model + beats.colour + beats.descend + walked + read + beats.leave + beats.linger
 }
-
-// Which titled stop the walk is nearest to, as an index into the titled stops only.
-export function nearest(stops: Stop[], t: number) {
-  const u = t * (stops.length - 1)
-  let best = 0
-  let bestD = Infinity
-  let k = -1
-  stops.forEach((s, i) => {
-    if (!s.title) return
-    k++
-    const d = Math.abs(i - u)
-    if (d < bestD) {
-      bestD = d
-      best = k
-    }
-  })
-  return best
-}

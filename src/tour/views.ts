@@ -82,6 +82,15 @@ function city(g: CanvasRenderingContext2D, suite: Suite) {
   g.lineTo(2800, HORIZON - 92)
   g.fill()
 
+  // towers on the far edge of the city, the only things that break the horizon
+  for (let x = 0; x < W; ) {
+    const w = 8 + r() * 26
+    const h = r() > 0.8 ? 30 + r() * 70 : 4 + r() * 22
+    g.fillStyle = `rgba(${120 + r() * 20},${112 + r() * 15},${140 + r() * 15},0.75)`
+    g.fillRect(x, HORIZON - h, w, h + 4)
+    x += w + r() * 14
+  }
+
   // Rows of roofs, far to near. Near rows are taller and wider, the way a
   // city looks from forty floors up.
   for (let y = HORIZON + 2; y < H + 40; ) {
@@ -92,9 +101,9 @@ function city(g: CanvasRenderingContext2D, suite: Suite) {
       const w = (6 + d * 110) * (0.5 + r())
       const front = (1 + d * 26) * (0.4 + r() * 1.3)
       const lit = r() > 0.35
-      g.fillStyle = `rgb(${tone + 30},${tone + 24},${tone + 34})`
+      g.fillStyle = `rgb(${tone + 48 + r() * 20},${tone + 40 + r() * 14},${tone + 44})`
       g.fillRect(x, y - front - row * 0.6, w, row * 0.6)
-      g.fillStyle = `rgb(${tone - 6},${tone - 10},${tone + 4})`
+      g.fillStyle = `rgb(${tone - 28},${tone - 30},${tone - 16})`
       g.fillRect(x, y - front, w, front + 2)
       if (lit && d > 0.12) {
         g.fillStyle = 'rgba(255,210,150,0.7)'
@@ -104,8 +113,7 @@ function city(g: CanvasRenderingContext2D, suite: Suite) {
     }
     y += row
   }
-  haze(g, suite.sky.haze, HORIZON - 30, HORIZON + 140)
-  haze(g, suite.sky.haze, HORIZON - 10, HORIZON + 50)
+  haze(g, suite.sky.haze, HORIZON - 20, HORIZON + 90)
   // the palace gardens: a dark green field with the moat around it
   g.fillStyle = 'rgba(52,72,55,0.9)'
   g.beginPath()
