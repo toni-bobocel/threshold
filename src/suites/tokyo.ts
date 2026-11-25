@@ -101,10 +101,10 @@ export const tokyo: Suite = {
       body: 'You step up from basalt onto camphor, the way every Japanese house is entered. A bench, a branch in a stone vase, nothing else asking for attention.',
       facts: [['Floor', 'Basalt'], ['Walls', 'Plaster and washi']],
     },
-    { pos: [-5.2, 1.62, -1.7], look: [-1, 1.4, -3.2] },
+    { pos: [-4.9, 1.62, -2.5], look: [-1, 1.4, -3.2] },
     {
-      pos: [-3.3, 1.6, -0.9],
-      look: [-1.6, 1.05, -4.6],
+      pos: [-3.2, 1.6, -1.5],
+      look: [-1.4, 1.05, -4.6],
       room: 'The dining room',
       title: 'A table for six by the glass',
       body: 'Breakfast is brought up on lacquer trays. Most guests end up eating it here, watching the city switch its lights off one office at a time.',
@@ -120,6 +120,7 @@ export const tokyo: Suite = {
       facts: [['Glass', 'Floor to ceiling, two sides'], ['Facing', 'North and east']],
     },
     { pos: [4.2, 1.62, -0.7], look: [4.3, 1.4, 3] },
+    { pos: [4.1, 1.62, 0.7], look: [3, 1.2, 3] },
     {
       pos: [1.9, 1.6, 0.75],
       look: [6, 0.9, 3.6],

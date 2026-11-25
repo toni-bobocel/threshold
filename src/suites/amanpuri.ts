@@ -98,10 +98,10 @@ export const amanpuri: Suite = {
       body: 'A path through the palms brings you out at the end of the pool. Everything on the deck is teak, oiled every month against the salt.',
       facts: [['Deck', 'Teak'], ['Shade', 'Palms and the sala roof']],
     },
-    { pos: [-2.2, 1.6, -4.4], look: [2, 1.4, 1] },
+    { pos: [1.2, 1.6, -4.6], look: [2, 1.4, 1] },
     {
-      pos: [0.6, 1.6, -1.6],
-      look: [2.6, 0.9, 3.2],
+      pos: [1.5, 1.6, -1.7],
+      look: [2.4, 0.9, 3.2],
       room: 'The bedroom',
       title: 'Under a roof of teak',
       body: 'The roof is pitched like a Thai house, open to the rafters, so the room stays cool without much help. Doors fold back onto the deck.',
